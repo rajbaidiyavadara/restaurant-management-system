@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>View Categories | Magic Food</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="icon" href="./download.jpeg" type="image/x-icon">
+
+  <style>
+    /* --- Global & Security --- */
+    body { 
+        background-color: #f8f9fa; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        
+        /* Disable Text Selection */
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    img {
+        -webkit-user-drag: none;
+        pointer-events: none;
+    }
+
+    /* --- Navbar Styling (Fixed Height 80px - EXACT INDEX MATCH) --- */
+    .navbar {
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      height: 80px; /* Fixed Height */
+      display: flex;
+      align-items: center;
+      z-index: 1030;
+      padding: 0;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* General Nav Links */
+    .nav-link {
+      color: #555;
+      font-weight: 600;
+      transition: 0.3s;
+      margin: 0 8px;
+    }
+
+    /* Active/Hover Color */
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+      color: #ff6b35 !important;
+    }
+
+    /* Login Button */
+    .btn-login {
+      border: 2px solid #0d6efd;
+      color: #0d6efd;
+      font-weight: 600;
+      border-radius: 50px;
+      padding: 6px 22px;
+      transition: 0.3s;
+    }
+
+    .btn-login:hover {
+      background: #0d6efd;
+      color: white;
+    }
+
+    /* Cart Icon Badge */
+    .cart-icon { position: relative; font-size: 22px; color: #000; margin-right: 20px; cursor: pointer; }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: red;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+
+    /* --- Sidebar Styling (Fixed & Fitted - EXACT MATCH) --- */
+    .sidebar {
+      background-color: #212529;
+      position: sticky;
+      top: 80px; /* Matches Navbar Height Exactly */
+      height: calc(100vh - 80px); /* Fills remaining screen */
+      overflow-y: auto;
+      padding-top: 20px;
+      z-index: 100;
+
+      /* Hide Scrollbar */
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .sidebar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8) !important;
+      margin-bottom: 5px;
+      transition: 0.3s;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-weight: normal;
+    }
+
+    .sidebar .nav-link:hover {
+      background-color: #343a40;
+      color: white !important;
+      padding-left: 20px;
+    }
+
+    /* Active Sidebar Link */
+    .sidebar .nav-link.active {
+      background-color: #ff6b35;
+      color: white !important;
+      font-weight: 600;
+    }
+
+    /* Category Page Specific Styles */
+    .cat-card { transition: transform 0.3s ease, box-shadow 0.3s ease; border: none; border-radius: 15px; overflow: hidden; cursor: pointer; }
+    .cat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+    .cat-img { height: 150px; width: 100%; object-fit: cover; }
+    .cat-overlay { background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); position: absolute; bottom: 0; width: 100%; padding: 10px; color: white; }
+    
+    .custom-table thead { background-color: #2f4858; color: white; }
+    .custom-table th, .custom-table td { vertical-align: middle; }
+    .table-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
+    
+    /* Footer Styling (Fixed) */
+    footer.l { padding: 50px 20px 20px; background-color: #1a1a1a; color: #ccc; border-radius: 10px 10px 0 0; margin-top: auto; width: 100%; }
+    footer h5 { color: #ff6b35; font-weight: bold; margin-bottom: 20px; }
+    footer ul li { margin-bottom: 10px; }
+    footer a { color: #ccc; text-decoration: none; transition: 0.3s; }
+    footer a:hover { color: #ff6b35; padding-left: 5px; }
+    .contact-row { display: flex; align-items: flex-start; margin-bottom: 15px; }
+    .contact-icon { color: #ff6b35; margin-right: 10px; font-size: 1.1rem; }
+
+    @media (max-width: 768px) {
+      .sidebar { position: static; height: auto; padding: 20px; }
+      .cat-img { height: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold text-danger" href="index.html">
+        <img src="./download.jpeg" width="30" height="30" alt="" /> Magic Food
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="./about.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="./contact.html">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="./Reservation.html">Reservation</a></li>
+          <li class="nav-item"><a class="nav-link active" href="./view_category.html">Categories</a></li>
+          
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="billing.html">
+              <i class="fas fa-shopping-cart cart-icon">
+                <span class="cart-badge" id="cart-count">0</span>
+              </i>
+            </a>
+          </li>
+
+          <li class="nav-item ms-2" id="nav-login-btn">
+             <a href="userlogin.html" class="btn btn-login text-decoration-none">Login</a>
+          </li>
+
+          <li class="nav-item dropdown ms-2" id="nav-user-profile" style="display: none;">
+            <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle text-primary fa-lg me-1"></i> <span id="user-name-display">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                <li><a class="dropdown-item py-2" href="orders.html"><i class="fas fa-box-open me-2 text-warning"></i>My Orders</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid p-0">
+    <div class="row g-0">
+      
+      <div class="col-md-2 sidebar d-none d-md-block">
+        <h4 class="text-white mb-4 px-3"><i class="fas fa-utensils me-2"></i>Menu</h4>
+        <nav class="nav flex-column w-100">
+          <a class="nav-link" href="./index.html">Home</a>
+          <a class="nav-link" href="./pizza.html">Pizza</a>
+          <a class="nav-link" href="./burger.html">Burger</a>
+          <a class="nav-link" href="./french.html">French Fries</a>
+          <a class="nav-link" href="./coldDrink.html">MilkShakes</a>
+          <a class="nav-link" href="./sandwich.html">Sandwiches</a>
+          <a class="nav-link" href="./salad.html">Salads</a>
+        </nav>
+      </div>
+
+      <div class="col-md-10 bg-light d-flex flex-column min-vh-100 p-0">
+        
+        <div class="p-4 flex-grow-1">
+          <h2 class="text-center mb-4 fw-bold text-dark">FULL MENU CATEGORIES</h2>
+
+          <div class="row g-4 mb-5">
+            <div class="col-6 col-md-4 col-lg-2"> <div class="card cat-card" onclick="window.location.href='pizza.html'"> <img src="./pizza2.jpg" onerror="this.src='https://via.placeholder.com/150'" class="cat-img" alt="Pizza"> <div class="cat-overlay"><h5>Pizza</h5></div> </div> </div>
+            <div class="col-6 col-md-4 col-lg-2"> <div class="card cat-card" onclick="window.location.href='burger.html'"> <img src="./brg.jpg" onerror="this.src='https://via.placeholder.com/150'" class="cat-img" alt="Burger"> <div class="cat-overlay"><h5>Burger</h5></div> </div> </div>
+            <div class="col-6 col-md-4 col-lg-2"> <div class="card cat-card" onclick="window.location.href='french.html'"> <img src="./frr.jpg" onerror="this.src='https://via.placeholder.com/150'" class="cat-img" alt="Fries"> <div class="cat-overlay"><h5>Fries</h5></div> </div> </div>
+            <div class="col-6 col-md-4 col-lg-2"> <div class="card cat-card" onclick="window.location.href='coldDrink.html'"> <img src="./cold.jpg" onerror="this.src='https://via.placeholder.com/150'" class="cat-img" alt="Shakes"> <div class="cat-overlay"><h5>Shakes</h5></div> </div> </div>
+            <div class="col-6 col-md-4 col-lg-2"> <div class="card cat-card" onclick="window.location.href='sandwich.html'"> <img src="./sand.jpg" onerror="this.src='https://via.placeholder.com/150'" class="cat-img" alt="Sandwich"> <div class="cat-overlay"><h5>Sandwich</h5></div> </div> </div>
+            <div class="col-6 col-md-4 col-lg-2"> <div class="card cat-card" onclick="window.location.href='salad.html'"> <img src="./salad.jpg" onerror="this.src='https://via.placeholder.com/150'" class="cat-img" alt="Salad"> <div class="cat-overlay"><h5>Salad</h5></div> </div> </div>
+          </div>
+
+          <h4 class="mb-3 text-secondary border-bottom pb-2">All Items List (36 Items)</h4>
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-0 table-responsive">
+              <table class="table table-hover custom-table mb-0 align-middle">
+                <thead class="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Image</th>
+                    <th>Item Name</th>
+                    <th>Description</th>
+                    <th>Price (₹)</th>
+                    <th>Category</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="foodsTable">
+                  </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <footer class="l w-100">
+          <div class="container-fluid">
+            <div class="row text-start">
+                <div class="col-md-4 mb-4"><h5>About Us</h5><p class="small">Magic Food is a leading fast-food destination, specializing in high-quality burgers, pizzas, and refreshing drinks.</p></div>
+                <div class="col-md-4 mb-4"><h5>Quick Links</h5><ul class="list-unstyled"><li><a href="index.html">Home</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li><li><a href="billing.html">My Cart</a></li><li><a href="userlogin.html">Login / Register</a></li></ul></div>
+                <div class="col-md-4 mb-4"><h5>Contact Info</h5><div class="contact-row"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span><span class="small">GIDC Phase-2, Dared,<br>Jamnagar, Gujarat - 361004</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-phone-alt"></i></span><span class="small">+91 76007 95003</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-envelope"></i></span><span class="small">baidiyavadararaj@gmail.com</span></div></div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start text-center small mb-2 mb-md-0">&copy; 2026 <strong>Magic Food Items</strong>. All Rights Reserved.</div>
+                <div class="col-md-6 text-md-end text-center"><img src="./play_store.png" alt="Play Store" style="height: 35px; margin-right: 10px; cursor:pointer;" /><img src="./app_store.png" alt="App Store" style="height: 35px; cursor:pointer;" /></div>
+            </div>
+          </div>
+        </footer>
+
+      </div> 
+    </div>
+  </div>
+
+  <div class="modal fade" id="viewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title fw-bold">Item Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img src="" id="modalImg" class="img-fluid rounded mb-3" style="width: 100%; height: 250px; object-fit: cover;">
+          <h3 id="modalName" class="fw-bold text-dark"></h3>
+          <span id="modalType" class="badge bg-secondary mb-3"></span>
+          <p id="modalDesc" class="text-muted"></p>
+          <h4 class="text-danger fw-bold">Price: ₹<span id="modalPrice"></span></h4>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="buyItemFromModal()">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- FULL 36 ITEMS DATA ---
+    const defaultItems = [
+        // Pizza (6)
+        { name: "Mexican Pizza", desc: "Spicy Mexican herbs, tangy sauce, onions.", price: 299, category: "Pizza", image: "./pizza1.jpg" },
+        { name: "Veg Pizza", desc: "Fresh vegetables like capsicum, tomato.", price: 399, category: "Pizza", image: "./pizza2.jpg" },
+        { name: "Mania Pizza", desc: "Soft base, light toppings of cheese, onion.", price: 350, category: "Pizza", image: "./pizza3.jpg" },
+        { name: "Paneer Pizza", desc: "Soft paneer cubes with spicy sauce.", price: 299, category: "Pizza", image: "./pizza4.jpg" },
+        { name: "Golden Corn Pizza", desc: "Topped with sweet golden corn, creamy cheese.", price: 250, category: "Pizza", image: "./pizza5.jpg" },
+        { name: "Roman Corn Pizza", desc: "Thin-crust pizza with golden corn and spices.", price: 230, category: "Pizza", image: "./pizza6.jpg" },
+        // Burger (6)
+        { name: "Chicken Burger", desc: "Crispy chicken patty with lettuce.", price: 199, category: "Burger", image: "./burger1.jpg" },
+        { name: "Veggie Delight", desc: "Loaded with fresh veggies and cheese sauce.", price: 149, category: "Burger", image: "./burger2.jpg" },
+        { name: "Cheese Burst", desc: "Double cheese layered juicy burger.", price: 249, category: "Burger", image: "./burger3.webp" },
+        { name: "Spicy Mexican", desc: "Spicy patty with jalapenos, salsa.", price: 229, category: "Burger", image: "./burger4.jpg" },
+        { name: "BBQ Bacon", desc: "Juicy burger topped with crispy bacon.", price: 279, category: "Burger", image: "./burger5.webp" },
+        { name: "Mushroom Swiss", desc: "Sautéed mushrooms with Swiss cheese.", price: 259, category: "Burger", image: "./burger6.jpeg" },
+        // Fries (6)
+        { name: "Air-fried Fries", desc: "Crispy outside, creamy inside, salted.", price: 199, category: "Fries", image: "./fre1.jpg" },
+        { name: "Shoestring Fries", desc: "Thinly sliced, deep-fried.", price: 299, category: "Fries", image: "./fre2.jpg" },
+        { name: "Boardwalk Fries", desc: "Served with Old Bay seasoning.", price: 150, category: "Fries", image: "./fre3.jpg" },
+        { name: "Curly Fries", desc: "Spiral-cut and seasoned.", price: 249, category: "Fries", image: "./fre4.jpg" },
+        { name: "Waffle Fries", desc: "Thick, crispy for dipping.", price: 270, category: "Fries", image: "./fre5.jpg" },
+        { name: "Loaded Fries", desc: "Topped with cheese, bacon.", price: 320, category: "Fries", image: "./fre6.webp" },
+        // Milkshakes (6)
+        { name: "Oreo Milkshake", desc: "Creamy Oreo delight with rich flavor.", price: 199, category: "Milkshake", image: "./m1.webp" },
+        { name: "Cherry Vanilla", desc: "Sweet cherry with smooth vanilla blend.", price: 299, category: "Milkshake", image: "./m2.jpg" },
+        { name: "Banana Milkshake", desc: "Thick creamy banana shake full of flavor.", price: 150, category: "Milkshake", image: "./m3.jpg" },
+        { name: "Strawberry Shake", desc: "Classic strawberry flavor, thick and sweet.", price: 180, category: "Milkshake", image: "./m4.jpeg" },
+        { name: "Chocolate Shake", desc: "Rich chocolate blend for lovers.", price: 220, category: "Milkshake", image: "./m4.avif" },
+        { name: "Mango Milkshake", desc: "Fresh mango delight, sweet and seasonal.", price: 170, category: "Milkshake", image: "./m6.jpg" },
+        // Sandwich (6)
+        { name: "Club Sandwich", desc: "Triple-layered sandwich with chicken.", price: 250, category: "Sandwich", image: "./sandw1.jpg" },
+        { name: "Grilled Cheese", desc: "Golden toasted bread with melted cheese.", price: 180, category: "Sandwich", image: "./sandw3.jpg" },
+        { name: "Veggie Sandwich", desc: "Fresh veggies & special sauce.", price: 200, category: "Sandwich", image: "./sandw2.jpg" },
+        { name: "Chicken Tikka", desc: "Spiced chicken tikka with onions.", price: 270, category: "Sandwich", image: "./sandw4.png" },
+        { name: "Egg Mayo", desc: "Creamy egg mayo filling.", price: 190, category: "Sandwich", image: "./sandw5.jpg" },
+        { name: "Paneer Tikka", desc: "Grilled paneer cubes with spices.", price: 260, category: "Sandwich", image: "./sandw6.jpg" },
+        // Salad (6)
+        { name: "Caesar Salad", desc: "Crisp romaine & parmesan.", price: 220, category: "Salad", image: "./salad1.jpg" },
+        { name: "Greek Salad", desc: "Cucumbers, olives, feta.", price: 240, category: "Salad", image: "./salad2.jpg" },
+        { name: "Garden Salad", desc: "Fresh mixed greens.", price: 180, category: "Salad", image: "./salad3.jpg" },
+        { name: "Grilled Chicken", desc: "Grilled chicken strips.", price: 280, category: "Salad", image: "./salad4.jpg" },
+        { name: "Fresh Fruit", desc: "Seasonal fruits bowl.", price: 200, category: "Salad", image: "./salad5.jpg" },
+        { name: "Pasta Salad", desc: "Cold pasta & veggies.", price: 230, category: "Salad", image: "./salad6.jpg" }
+    ];
+
+    let categories = [];
+    let viewModal = null;
+    let currentSelectedItem = null;
+    let cart = [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+        initCart();
+        
+        const modalEl = document.getElementById('viewModal');
+        if(modalEl) viewModal = new bootstrap.Modal(modalEl);
+
+        loadFoodsFromDB();
+    });
+
+    // --- Login Check ---
+    function checkLoginStatus() {
+        const user = localStorage.getItem('user');
+        if(user) {
+            document.getElementById('nav-login-btn').style.display = 'none';
+            document.getElementById('nav-user-profile').style.display = 'block';
+            document.getElementById('user-name-display').innerText = JSON.parse(user).name.split(' ')[0];
+        }
+    }
+
+    function logout() {
+        if(confirm("Logout?")) {
+            localStorage.removeItem('user');
+            window.location.reload(); 
+        }
+    }
+
+    // --- Data Loading ---
+    async function loadFoodsFromDB() {
+      const table = document.getElementById("foodsTable");
+      table.innerHTML = `<tr><td colspan="7" class="text-center p-4">Loading Data from Server...</td></tr>`;
+
+      try {
+        // Attempt to fetch from Node.js backend
+        const response = await fetch('http://localhost:3000/menu');
+        
+        if (response.ok) {
+            categories = await response.json(); 
+            if (categories.length === 0) categories = defaultItems;
+        } else {
+            categories = defaultItems;
+        }
+      } catch (error) {
+        console.error("Server error, using backup data:", error);
+        categories = defaultItems;
+      }
+      renderTable(categories);
+    }
+
+    function renderTable(data) {
+        const table = document.getElementById("foodsTable");
+        table.innerHTML = data.map((cat, index) => `
+            <tr>
+            <td>${index + 1}</td>
+            <td><img src="${cat.image}" class="table-img" onerror="this.src='https://via.placeholder.com/60'"></td>
+            <td class="fw-bold">${cat.name}</td>
+            <td class="text-muted small">${cat.description || cat.desc}</td>
+            <td class="text-success fw-bold">₹${cat.price}</td>
+            <td><span class="badge bg-secondary">${cat.category}</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewItem(${index})"><i class="fas fa-eye"></i> View</button>
+            </td>
+            </tr>
+        `).join("");
+    }
+
+    // --- View & Buy ---
+    function viewItem(index) {
+      currentSelectedItem = categories[index];
+      document.getElementById('modalImg').src = currentSelectedItem.image;
+      document.getElementById('modalName').innerText = currentSelectedItem.name;
+      document.getElementById('modalType').innerText = currentSelectedItem.category;
+      document.getElementById('modalDesc').innerText = currentSelectedItem.description || currentSelectedItem.desc;
+      document.getElementById('modalPrice').innerText = currentSelectedItem.price;
+      if(viewModal) viewModal.show();
+    }
+
+    function buyItemFromModal() {
+        if (!currentSelectedItem) return;
+        const existingItemIndex = cart.findIndex(item => item.name === currentSelectedItem.name);
+        if (existingItemIndex !== -1) { cart[existingItemIndex].quantity += 1; } 
+        else { cart.push({ name: currentSelectedItem.name, price: parseFloat(currentSelectedItem.price), quantity: 1, image: currentSelectedItem.image }); }
+        
+        saveCart();
+        updateCartCount();
+        viewModal.hide();
+        window.location.href = 'billing.html';
+    }
+
+    // --- Cart Helpers ---
+    function initCart() {
+        const savedCart = localStorage.getItem('checkoutCart'); 
+        if (savedCart) { cart = JSON.parse(savedCart); updateCartCount(); }
+    }
+    function saveCart() { localStorage.setItem('checkoutCart', JSON.stringify(cart)); }
+    function updateCartCount() {
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
+        document.getElementById('cart-count').innerText = count;
+    }
+
+    // --- Security: Disable Right Click & Inspect ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    
+    document.onkeydown = function(e) {
+      if (e.keyCode == 123) return false; // F12 (Inspect)
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J
+      if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U (View Source)
+      if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; // Ctrl+S (Save)
+      if (e.ctrlKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+C (Copy)
+      if (e.ctrlKey && e.keyCode == 'A'.charCodeAt(0)) return false; // Ctrl+A (Select All)
+    };
+  </script>
+
+</body>
+</html>

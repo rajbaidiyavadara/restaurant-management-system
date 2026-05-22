@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Magic Food</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+  <link rel="icon" href="download.jpeg" type="image/x-icon">
+
+  <style>
+    body { background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+    
+    /* Sidebar */
+    .sidebar { 
+        height: 100vh; width: 260px; position: fixed; top: 0; left: 0; 
+        background: #212529; color: white; padding-top: 25px; 
+        z-index: 1000; overflow-y: auto; transition: 0.3s;
+        box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    }
+    .sidebar h3 { font-size: 1.5rem; margin-bottom: 30px; font-weight: 800; color: #ff6b35; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+    .nav-link { color: rgba(255,255,255,0.7); padding: 15px 25px; cursor: pointer; transition: 0.3s; font-size: 1rem; border-left: 4px solid transparent; }
+    .nav-link:hover { background: #343a40; color: white; padding-left: 30px; }
+    .nav-link.active { background: #2c3e50; color: #ff6b35; border-left: 4px solid #ff6b35; font-weight: 600; }
+    .nav-link i { width: 30px; text-align: center; }
+
+    /* Content Area */
+    .content { margin-left: 260px; padding: 30px; transition: 0.3s; }
+
+    /* Cards */
+    .stat-card { border: none; border-radius: 12px; padding: 25px; color: white; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .stat-card:hover { transform: translateY(-5px); }
+    .stat-card h2 { font-size: 2.2rem; font-weight: 700; margin: 0; }
+    .stat-card p { opacity: 0.9; margin: 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; }
+    
+    .bg-rev { background: linear-gradient(135deg, #ff6b35, #ff9f43); }
+    .bg-ord { background: linear-gradient(135deg, #4834d4, #686de0); }
+    .bg-item { background: linear-gradient(135deg, #20bf6b, #0fb9b1); }
+
+    /* Table Styling */
+    .table-container { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+    .table thead { background: #343a40; color: white; }
+    .table th { font-weight: 600; text-transform: uppercase; font-size: 0.85rem; padding: 15px; border: none; }
+    .table td { vertical-align: middle; padding: 15px; border-bottom: 1px solid #f0f0f0; }
+    
+    /* Status Dropdowns with Dynamic Colors */
+    .status-select { 
+        font-weight: 700; border-radius: 50px; padding: 5px 30px 5px 15px; border: 2px solid; 
+        cursor: pointer; background-color: white; font-size: 0.85rem; transition: 0.3s;
+    }
+    .status-select:focus { box-shadow: none; }
+    
+    /* Colors Based on Status */
+    .st-Pending { border-color: #dc3545; color: #dc3545; }
+    .st-Cooking { border-color: #ffc107; color: #d39e00; }
+    .st-Out { border-color: #0d6efd; color: #0d6efd; } /* Out for Delivery */
+    .st-Delivered { border-color: #198754; color: #198754; }
+
+    @media (max-width: 768px) {
+        .sidebar { width: 70px; text-align: center; }
+        .sidebar h3, .nav-link span { display: none; }
+        .content { margin-left: 70px; padding: 15px; }
+        .nav-link { padding: 15px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h3 class="text-center mb-4 mt-2"><i class="fas fa-utensils"></i> <span class="d-none d-md-inline">Admin</span></h3>
+    <div class="nav flex-column">
+      <a href="admin.html" class="nav-link active"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+      <a href="view_category.html" class="nav-link"><i class="fas fa-list"></i> <span>Menu Items</span></a>
+      <a href="add_category.html" class="nav-link"><i class="fas fa-plus-circle"></i> <span>Add New</span></a>
+      <a href="index.html" class="nav-link"><i class="fas fa-globe"></i> <span>Website</span></a>
+      <a href="#" onclick="logout()" class="nav-link text-danger mt-5"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+    </div>
+  </div>
+
+  <div class="content">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="fw-bold text-dark mb-0">Dashboard Overview</h2>
+            <p class="text-muted small">Manage live orders and status</p>
+          </div>
+          <button class="btn btn-dark rounded-pill px-4" onclick="loadAllData()">
+            <i class="fas fa-sync-alt me-2"></i>Refresh Data
+          </button>
+      </div>
+
+      <div class="row g-4 mb-4">
+          <div class="col-md-4">
+              <div class="stat-card bg-rev">
+                  <p>Total Revenue</p>
+                  <h2 id="total-rev">₹0</h2>
+                  <i class="fas fa-rupee-sign fa-2x position-absolute end-0 bottom-0 m-3 opacity-25"></i>
+              </div>
+          </div>
+          <div class="col-md-4">
+              <div class="stat-card bg-ord">
+                  <p>Total Orders</p>
+                  <h2 id="total-ord">0</h2>
+                  <i class="fas fa-shopping-bag fa-2x position-absolute end-0 bottom-0 m-3 opacity-25"></i>
+              </div>
+          </div>
+          <div class="col-md-4">
+              <div class="stat-card bg-item">
+                  <p>Top Dish</p>
+                  <h2 id="top-item" style="font-size: 1.8rem;">-</h2>
+                  <i class="fas fa-star fa-2x position-absolute end-0 bottom-0 m-3 opacity-25"></i>
+              </div>
+          </div>
+      </div>
+
+      <div class="table-container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-secondary m-0"><i class="fas fa-clock me-2"></i>Live Orders</h5>
+            <span class="badge bg-success animate__animated animate__pulse animate__infinite">Live Updates On</span>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-dark rounded">
+              <tr>
+                <th>Order ID</th>
+                <th>Customer Info</th>
+                <th style="width: 30%;">Items Ordered</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Live Status</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table">
+              <tr><td colspan="6" class="text-center p-5 text-muted">Loading orders data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+
+  <script>
+    // Load Data on Start
+    document.addEventListener("DOMContentLoaded", () => {
+        loadAllData();
+        setInterval(loadAllData, 5000); // Auto-Refresh every 5 seconds
+    });
+
+    function loadAllData() {
+        // Prevent refresh if user is currently interacting with a dropdown
+        if (document.activeElement.tagName === 'SELECT') return;
+        
+        fetchAnalytics(); 
+        fetchOrdersTable(); 
+    }
+
+    // 1. Analytics Fetch
+    async function fetchAnalytics() {
+        try {
+            const res = await fetch('https://magic-backend-qx8y.onrender.com/admin/analytics');
+            const data = await res.json();
+            document.getElementById('total-rev').innerText = "₹" + parseFloat(data.stats.revenue).toLocaleString();
+            document.getElementById('total-ord').innerText = data.stats.orders;
+            document.getElementById('top-item').innerText = data.stats.topItem;
+        } catch (e) { console.error("Analytics Error", e); }
+    }
+
+    // 2. Orders Table Fetch
+    async function fetchOrdersTable() {
+        const table = document.getElementById('orders-table');
+        try {
+            const res = await fetch('http://localhost:3000/all-orders');
+            const orders = await res.json();
+
+            if (!orders || orders.length === 0) {
+                table.innerHTML = `<tr><td colspan="6" class="text-center p-5 text-muted"><i class="fas fa-box-open fa-2x mb-3"></i><br>No orders received yet!</td></tr>`;
+                return;
+            }
+
+            // Generate HTML
+            const html = orders.slice(0, 15).map(order => { 
+                // Parsing Items
+                let itemsHtml = "";
+                try {
+                    const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items; 
+                    itemsHtml = items.map(i => `<span class="badge bg-light text-dark border me-1 mb-1">${i.name} (${i.quantity})</span>`).join('');
+                } catch(e) { itemsHtml = "<span class='text-danger'>Error loading items</span>"; }
+
+                // Get Status from Database
+                const currentStatus = order.order_status || 'Pending';
+                
+                const statusOptions = ['Pending', 'Cooking', 'Out for Delivery', 'Delivered'];
+                let optionsHtml = statusOptions.map(s => 
+                    `<option value="${s}" ${s === currentStatus ? 'selected' : ''}>${s}</option>`
+                ).join('');
+
+                // CSS Class for Status Color
+                let colorClass = 'st-Pending';
+                if(currentStatus === 'Cooking') colorClass = 'st-Cooking';
+                if(currentStatus.includes('Delivery')) colorClass = 'st-Out';
+                if(currentStatus === 'Delivered') colorClass = 'st-Delivered';
+
+                return `
+                    <tr>
+                        <td><span class="fw-bold text-dark">#${order.id}</span></td>
+                        <td>
+                            <div class="fw-bold">${order.user_phone}</div>
+                            <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>${order.address || 'N/A'}</small>
+                        </td>
+                        <td>${itemsHtml}</td>
+                        <td class="fw-bold text-success">₹${order.total_amount}</td>
+                        <td>
+                            <span class="badge bg-secondary text-uppercase">${order.payment_method}</span>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm status-select ${colorClass}" 
+                                onchange="updateStatus(${order.id}, this)">
+                                ${optionsHtml}
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Only update DOM if changed (to prevent UI flicker)
+            if(table.innerHTML !== html) {
+                table.innerHTML = html;
+            }
+
+        } catch (error) { console.error("Table Error:", error); }
+    }
+
+    // 3. Update Status Function (Sends to Server)
+    async function updateStatus(id, selectElement) {
+        const newStatus = selectElement.value;
+        
+        // Instant UI Feedback (Color change)
+        let colorClass = 'st-Pending';
+        if(newStatus === 'Cooking') colorClass = 'st-Cooking';
+        if(newStatus.includes('Delivery')) colorClass = 'st-Out';
+        if(newStatus === 'Delivered') colorClass = 'st-Delivered';
+        
+        selectElement.className = `form-select form-select-sm status-select ${colorClass}`;
+
+        try {
+            const res = await fetch('http://localhost:3000/admin/update-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: id, status: newStatus })
+            });
+            const data = await res.json();
+            
+            if(!data.success) {
+                alert("Failed to update status! Check Database connection.");
+            } else {
+                console.log(`Order #${id} updated to ${newStatus}`);
+                fetchOrdersTable(); // Refresh table to confirm save
+            }
+        } catch(e) { 
+            console.error(e); 
+            alert("Network Error!"); 
+        }
+    }
+
+    function logout() {
+        if(confirm("Logout from Admin Panel?")) window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

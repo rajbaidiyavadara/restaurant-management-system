@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book a Table | Magic Food</title>
+  
+  <link rel="icon" href="./download.jpeg" type="image/x-icon">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- Global & Fonts --- */
+    body { 
+        font-family: 'Segoe UI', sans-serif; 
+        overflow-x: hidden; 
+        background-color: #f8f9fa;
+        
+        /* 1. Disable Text Selection */
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* IE10+/Edge */
+        user-select: none;         /* Standard */
+    }
+    
+    /* 2. Disable Image Dragging & Clicking */
+    img {
+        -webkit-user-drag: none;
+        pointer-events: none;
+    }
+
+    h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+    /* --- Navbar Styling (Exact Match to Image) --- */
+    .navbar {
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      padding-top: 12px;
+      padding-bottom: 12px;
+      z-index: 1030;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* General Nav Links */
+    .nav-link {
+      color: #555;
+      font-weight: 600;
+      transition: 0.3s;
+      margin: 0 8px;
+    }
+
+    /* Active/Hover Color */
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+      color: #ff6b35 !important;
+    }
+
+    /* Login Button */
+    .btn-login {
+      border: 2px solid #0d6efd;
+      color: #0d6efd;
+      font-weight: 600;
+      border-radius: 50px;
+      padding: 6px 22px;
+      transition: 0.3s;
+    }
+    .btn-login:hover { background: #0d6efd; color: white; }
+
+    /* Cart Icon Badge */
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: red;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+
+    /* --- UNIQUE ANIMATED BACKGROUND --- */
+    .animated-bg {
+        /* Magic Gradient: Orange -> Pink -> Blue -> Green */
+        background: linear-gradient(-45deg, #ff6b35, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        position: relative;
+    }
+
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* --- Glassmorphism Card --- */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 25px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        width: 100%;
+        max-width: 1100px;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
+        transform: translateY(0);
+        transition: transform 0.3s ease;
+    }
+    .glass-card:hover { transform: translateY(-5px); }
+
+    /* Left Side: Visuals */
+    .glass-visual {
+        background: url('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1470&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        width: 40%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 40px;
+        color: white;
+    }
+    .glass-visual::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8));
+    }
+    .visual-content { position: relative; z-index: 2; }
+    .visual-content h2 { font-size: 2.5rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    .visual-content p { font-size: 1.1rem; opacity: 0.9; }
+    
+    .glass-badges { display: flex; gap: 15px; margin-top: 20px; }
+    .glass-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        padding: 10px 15px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        display: flex; align-items: center; gap: 8px;
+    }
+
+    /* Right Side: Form */
+    .glass-form { width: 60%; padding: 50px; background: white; }
+    .form-header { margin-bottom: 30px; text-align: center; }
+    .form-header h3 { color: #333; font-weight: 700; letter-spacing: 1px; }
+    .form-header span { width: 60px; height: 4px; background: #ff6b35; display: block; margin: 10px auto 0; border-radius: 2px; }
+
+    /* Modern Floating Inputs */
+    .form-floating > .form-control, .form-floating > .form-select {
+        border: 2px solid #f0f0f0;
+        border-radius: 12px;
+        background: #fdfdfd;
+        font-weight: 500;
+    }
+    .form-floating > .form-control:focus, .form-floating > .form-select:focus {
+        border-color: #ff6b35;
+        box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+    }
+    .form-floating > label { color: #777; }
+
+    /* Animated Button */
+    .btn-magic {
+        background-size: 200% auto;
+        background-image: linear-gradient(to right, #ff6b35 0%, #e73c7e 51%, #ff6b35 100%);
+        color: white;
+        border: none;
+        padding: 16px;
+        width: 100%;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: 0.5s;
+        box-shadow: 0 10px 20px rgba(231, 60, 126, 0.3);
+        margin-top: 20px;
+    }
+    .btn-magic:hover { background-position: right center; transform: translateY(-3px); }
+
+    /* Footer */
+    footer.l { padding: 50px 20px 20px; background-color: #1a1a1a; color: #ccc; border-radius: 10px 10px 0 0; }
+    footer h5 { color: #ff6b35; font-weight: bold; margin-bottom: 20px; }
+    footer ul li { margin-bottom: 10px; }
+    footer a { color: #ccc; text-decoration: none; transition: 0.3s; }
+    footer a:hover { color: #ff6b35; padding-left: 5px; }
+    .contact-row { display: flex; align-items: flex-start; margin-bottom: 15px; }
+    .contact-icon { color: #ff6b35; margin-right: 10px; font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .glass-visual, .glass-form { width: 100%; }
+        .glass-visual { height: 300px; }
+        .glass-form { padding: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold text-danger" href="index.html">
+        <img src="./download.jpeg" width="30" height="30" alt="" /> Magic Food
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="./about.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="./contact.html">Contact</a></li>
+          <li class="nav-item"><a class="nav-link active" href="./Reservation.html">Reservation</a></li>
+          <li class="nav-item"><a class="nav-link" href="./view_category.html">Categories</a></li>
+          
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="billing.html">
+              <i class="fas fa-shopping-cart" style="font-size: 22px; color: #000; position: relative;">
+                <span class="cart-badge" id="cart-count">0</span>
+              </i>
+            </a>
+          </li>
+
+          <li class="nav-item ms-2" id="nav-login-btn">
+             <a href="userlogin.html" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">Login</a>
+          </li>
+
+          <li class="nav-item dropdown ms-2" id="nav-user-profile" style="display: none;">
+            <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle text-primary fa-lg me-1"></i> <span id="user-name-display">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                <li><a class="dropdown-item py-2" href="orders.html"><i class="fas fa-box-open me-2 text-warning"></i>My Orders</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="animated-bg">
+    <div class="glass-card">
+        
+        <div class="glass-visual">
+            <div class="visual-content">
+                <h2>Reserve Your<br>Table Today</h2>
+                <p>Don't wait in line. Book your spot and experience the magic of taste instantly.</p>
+                <div class="glass-badges">
+                    <div class="glass-badge"><i class="fas fa-wine-glass-alt"></i> Fine Dining</div>
+                    <div class="glass-badge"><i class="fas fa-music"></i> Live Music</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-form">
+            <div class="form-header">
+                <h3>Table Booking</h3>
+                <span></span>
+            </div>
+            
+            <form id="reservationForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="name" placeholder="Name" required>
+                            <label for="name">Your Name</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="tel" class="form-control" id="phone" placeholder="Enter your Phone No" required>
+                            <label for="phone">Enter your Phone No</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="email" class="form-control" id="email" placeholder="Enter Your Email ID" required>
+                            <label for="email">Enter Your Email ID</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="date" required>
+                            <label for="date">Date</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="time" class="form-control" id="time" required>
+                            <label for="time">Time</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <select class="form-select" id="guests">
+                                <option value="2">2 People</option>
+                                <option value="3">3 People</option>
+                                <option value="4">4 People</option>
+                                <option value="5">5 People</option>
+                                <option value="6">6+ People</option>
+                            </select>
+                            <label for="guests">Number of Guests</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="message" style="height: 80px" placeholder="Special Request"></textarea>
+                            <label for="message">Any Special Request?</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-magic">
+                    Book Now <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </form>
+        </div>
+
+    </div>
+  </div>
+
+  <footer class="l w-100">
+    <div class="container-fluid">
+      <div class="row text-start">
+          <div class="col-md-4 mb-4"><h5>About Us</h5><p class="small">Magic Food is a leading fast-food destination, specializing in high-quality burgers, pizzas, and refreshing drinks.</p></div>
+          <div class="col-md-4 mb-4"><h5>Quick Links</h5><ul class="list-unstyled"><li><a href="index.html">Home</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li><li><a href="billing.html">My Cart</a></li><li><a href="userlogin.html">Login / Register</a></li></ul></div>
+          <div class="col-md-4 mb-4"><h5>Contact Info</h5><div class="contact-row"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span><span class="small">GIDC Phase-2, Dared,<br>Jamnagar, Gujarat - 361004</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-phone-alt"></i></span><span class="small">+91 76007 95003</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-envelope"></i></span><span class="small">baidiyavadararaj@gmail.com</span></div></div>
+      </div>
+      <hr class="border-secondary my-4">
+      <div class="row align-items-center">
+          <div class="col-md-6 text-md-start text-center small mb-2 mb-md-0">&copy; 2026 <strong>Magic Food Items</strong>. All Rights Reserved.</div>
+          <div class="col-md-6 text-md-end text-center"><img src="./play_store.png" alt="Play Store" style="height: 35px; margin-right: 10px; cursor:pointer;" /><img src="./app_store.png" alt="App Store" style="height: 35px; cursor:pointer;" /></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // --- Login & Cart Logic ---
+    function checkLoginStatus() {
+        const user = localStorage.getItem('user');
+        if(user) {
+            document.getElementById('nav-login-btn').style.display = 'none';
+            document.getElementById('nav-user-profile').style.display = 'block';
+            document.getElementById('user-name-display').innerText = JSON.parse(user).name.split(' ')[0];
+        }
+    }
+
+    function logout() {
+        if(confirm("Logout?")) {
+            localStorage.removeItem('user');
+            window.location.reload(); 
+        }
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('checkoutCart')) || [];
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const badge = document.getElementById('cart-count');
+        if(badge) badge.innerText = count;
+    }
+
+    // --- Form Logic ---
+    const form = document.getElementById('reservationForm');
+    const btn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      btn.style.opacity = '0.7';
+
+      const formData = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        guests: document.getElementById('guests').value,
+        message: document.getElementById('message').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:3000/book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            btn.innerHTML = '<i class="fas fa-check"></i> Reserved!';
+            btn.style.background = '#2ecc71';
+            setTimeout(() => {
+                alert('✅ Table Reserved Successfully! We will confirm via email.');
+                window.location.href = 'index.html';
+            }, 500);
+        } else {
+            alert('❌ Failed: ' + (result.error || "Server Error"));
+            resetBtn();
+        }
+
+      } catch (error) {
+        console.error(error);
+        alert('Server is offline! But your UI looks amazing.');
+        resetBtn();
+      }
+    });
+
+    function resetBtn() {
+        btn.innerHTML = 'Book Now <i class="fas fa-arrow-right ms-2"></i>';
+        btn.style.opacity = '1';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+        updateCartCount();
+    });
+
+    // 3. Disable Right Click & Inspect Element
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    
+    document.onkeydown = function(e) {
+      if (e.keyCode == 123) return false; // F12
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J
+      if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U
+      if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; // Ctrl+S
+      if (e.ctrlKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+C
+      if (e.ctrlKey && e.keyCode == 'A'.charCodeAt(0)) return false; // Ctrl+A
+    };
+  </script>
+
+</body>
+</html>

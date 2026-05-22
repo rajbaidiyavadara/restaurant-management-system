@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Order Panel | Magic Food</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="icon" href="download.jpeg" type="image/x-icon">
+    
+
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .container-box { flex: 1; } /* Pushes footer to bottom */
+
+        .order-card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; transition: transform 0.2s; background: white; }
+        .order-card:hover { transform: translateY(-3px); }
+        
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .badge-cod { background-color: #ffc107; color: #000; }
+        .badge-paid { background-color: #198754; color: #fff; }
+        
+        .item-list { background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        
+        .refresh-btn { position: fixed; bottom: 30px; right: 30px; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; border: none; }
+
+        /* Footer Styling */
+        footer.l { padding: 50px 20px 20px; background-color: #1a1a1a; color: #ccc; border-radius: 10px 10px 0 0; margin-top: auto; }
+        footer h5 { color: #ff6b35; font-weight: bold; margin-bottom: 20px; }
+        footer ul li { margin-bottom: 10px; }
+        footer a { color: #ccc; text-decoration: none; transition: 0.3s; }
+        footer a:hover { color: #ff6b35; padding-left: 5px; }
+        .contact-row { display: flex; align-items: flex-start; margin-bottom: 15px; }
+        .contact-icon { color: #ff6b35; margin-right: 10px; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+<div class="container py-5 container-box">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">Order Management</h2>
+        <a href="index.html" class="btn btn-outline-dark btn-sm"><i class="fas fa-home me-2"></i>Home</a>
+    </div>
+    
+    <div id="orders-container" class="row">
+        <div class="col-12 text-center mt-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p>Loading Orders...</p>
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-primary refresh-btn" onclick="loadOrders()">↻</button>
+
+<footer class="l w-100">
+  <div class="container-fluid">
+    <div class="row text-start">
+        <div class="col-md-4 mb-4"><h5>About Us</h5><p class="small">Magic Food is a leading fast-food destination, specializing in high-quality burgers, pizzas, and refreshing drinks.</p></div>
+        <div class="col-md-4 mb-4"><h5>Quick Links</h5><ul class="list-unstyled"><li><a href="index.html">Home</a></li><li><a href="pizza.html">All Products</a></li><li><a href="Reservation.html">Reservation</a></li><li><a href="billing.html">My Cart</a></li><li><a href="userlogin.html">Login / Register</a></li></ul></div>
+        <div class="col-md-4 mb-4"><h5>Contact Info</h5><div class="contact-row"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span><span class="small">GIDC Phase-2, Dared,<br>Jamnagar, Gujarat - 361004</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-phone-alt"></i></span><span class="small">+91 76007 95003</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-envelope"></i></span><span class="small">baidiyavadararaj@gmail.com</span></div></div>
+    </div>
+    <hr class="border-secondary my-4">
+    <div class="row align-items-center">
+        <div class="col-md-6 text-md-start text-center small mb-2 mb-md-0">&copy; 2026 <strong>Magic Food Items</strong>. All Rights Reserved.</div>
+        <div class="col-md-6 text-md-end text-center"><img src="./play_store.png" alt="Play Store" style="height: 35px; margin-right: 10px; cursor:pointer;" /><img src="./app_store.png" alt="App Store" style="height: 35px; cursor:pointer;" /></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+    // Load orders on page load
+    window.onload = loadOrders;
+
+    async function loadOrders() {
+        const container = document.getElementById('orders-container');
+        
+        try {
+            // Fetch from Node.js endpoint
+            const response = await fetch('http://localhost:3000/all-orders');
+            const orders = await response.json();
+
+            container.innerHTML = ''; // Clear old data
+
+            if (orders.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center"><h4>No Orders Yet!</h4></div>';
+                return;
+            }
+
+            orders.forEach(order => {
+                // Parse JSON Data
+                let itemsList = [];
+                
+                try {
+                    // Check if items is already an object or string
+                    itemsList = typeof order.items === 'string' ? JSON.parse(order.items) : order.items; 
+                } catch(e) {
+                    console.error("JSON Parse Error", e);
+                }
+
+                // Generate Items HTML
+                let itemsHtml = itemsList.map(item => 
+                    `<div class="d-flex justify-content-between">
+                        <span>${item.name} <small class="text-muted">x${item.quantity}</small></span>
+                        <span>₹${item.price * item.quantity}</span>
+                    </div>`
+                ).join('');
+
+                // Status Badge Color
+                let badgeClass = order.payment_status === 'Paid' ? 'badge-paid' : 'badge-cod';
+
+                // Create HTML Card
+                const cardHtml = `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card order-card">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">#Order-${order.id}</span>
+                                <span class="status-badge ${badgeClass}">${order.payment_method}</span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">User Phone: ${order.user_phone}</h5>
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt me-1"></i> ${order.address || 'No Address'}
+                                </p>
+                                
+                                <div class="item-list mb-3">
+                                    ${itemsHtml}
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Total Bill:</span>
+                                        <span>₹${order.total_amount}</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-muted small mb-0 text-end">
+                                    Ordered: ${new Date(order.created_at).toLocaleString()}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+
+        } catch (error) {
+            console.error(error);
+            container.innerHTML = '<div class="col-12 text-danger text-center">Error loading orders! Ensure Node.js server is running.</div>';
+        }
+    }
+    
+    // Auto-refresh every 10 seconds
+    setInterval(loadOrders, 10000);
+
+</script>
+
+<style>
+  /* Text Selection Disable */
+  body {
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE/Edge */
+    user-select: none;         /* Standard */
+  }
+  
+  /* Prevent image dragging */
+  img {
+    -webkit-user-drag: none;
+    pointer-events: none; /* Do not Click or drag img */
+  }
+</style>
+
+<script>
+  // 1. Right Click Disable
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // 2. Keyboard Shortcuts Disable (Ctrl+C, Ctrl+U, F12, etc.)
+  document.onkeydown = function(e) {
+    if (event.keyCode == 123) { // F12 (Inspect)
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U (View Source)
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) { // Ctrl+S (Save Page)
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+C (Copy)
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode == 'A'.charCodeAt(0)) { // Ctrl+A (Select All)
+      return false;
+    }
+  };
+</script>
+</body>
+</html>

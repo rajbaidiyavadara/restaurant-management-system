@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us - Magic Food</title>
+  
+  <link rel="icon" href="./download.jpeg" type="image/x-icon">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* --- Global Styles & Content Protection --- */
+    body { 
+        background-color: #f8f9fa; 
+        font-family: 'Segoe UI', sans-serif; 
+        overflow-x: hidden; 
+        
+        /* Disable Text Selection */
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* IE10+/Edge */
+        user-select: none;         /* Standard */
+    }
+
+    /* Disable Image Dragging & Clicking */
+    img {
+        -webkit-user-drag: none;
+        pointer-events: none;
+    }
+
+    /* --- Navbar Styling (Exact Match to Index/Contact) --- */
+    .navbar {
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      padding-top: 12px;
+      padding-bottom: 12px;
+      z-index: 1030;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* General Nav Links */
+    .nav-link {
+      color: #555;
+      font-weight: 600;
+      transition: 0.3s;
+      margin: 0 8px;
+    }
+
+    /* Active/Hover Color */
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+      color: #ff6b35 !important;
+    }
+
+    /* Login Button */
+    .btn-login {
+      border: 2px solid #0d6efd;
+      color: #0d6efd;
+      font-weight: 600;
+      border-radius: 50px;
+      padding: 6px 22px;
+      transition: 0.3s;
+    }
+
+    .btn-login:hover {
+      background: #0d6efd;
+      color: white;
+    }
+
+    /* Cart Icon Badge */
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: red;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+
+    /* --- Hero Section --- */
+    .about-hero {
+        position: relative;
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1470&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        height: 450px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 60px;
+    }
+    .about-hero-content h1 { font-size: 4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-bottom: 15px; }
+    .about-hero-content p { font-size: 1.5rem; font-weight: 300; opacity: 0.9; max-width: 700px; margin: 0 auto; }
+    .about-hero::after {
+        content: ''; position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+        width: 100px; height: 5px; background: #ff6b35; border-radius: 5px;
+    }
+
+    /* --- Story Section --- */
+    .story-section { padding: 50px 0; }
+    .story-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        padding: 40px;
+        position: relative;
+        z-index: 2;
+        border-left: 5px solid #ff6b35;
+    }
+    .story-img-container {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    .story-img { width: 100%; transition: transform 0.5s; }
+    .story-img-container:hover .story-img { transform: scale(1.1); }
+
+    /* --- Stats Bar --- */
+    .stats-bar {
+        background: #212529;
+        color: white;
+        padding: 60px 0;
+        margin: 80px 0;
+        position: relative;
+    }
+    .stat-item i { font-size: 3.5rem; color: #ff6b35; margin-bottom: 15px; }
+    .stat-num { font-size: 3rem; font-weight: 800; }
+    .stat-label { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+
+    /* --- Team Cards --- */
+    .team-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: 0.4s;
+        text-align: center;
+        position: relative;
+    }
+    .team-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    .team-img-box { position: relative; overflow: hidden; height: 320px; }
+    .team-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+    .team-card:hover .team-img { transform: scale(1.1); filter: brightness(0.8); }
+    
+    .social-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center; gap: 15px;
+        opacity: 0; transition: 0.4s;
+        background: rgba(0,0,0,0.3);
+    }
+    .team-card:hover .social-overlay { opacity: 1; }
+    .social-icon {
+        width: 40px; height: 40px; background: white; color: #ff6b35;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        text-decoration: none; font-size: 1.2rem; transition: 0.3s;
+    }
+    .social-icon:hover { background: #ff6b35; color: white; transform: rotate(360deg); }
+
+    .team-info { padding: 25px; }
+    .team-name { font-weight: 800; color: #212529; font-size: 1.3rem; margin-bottom: 5px; }
+    .team-role { color: #ff6b35; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; }
+
+    /* --- Values Section --- */
+    .value-box {
+        text-align: center; padding: 40px 20px; border-radius: 20px; background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid #eee;
+    }
+    .value-box:hover { background: #ff6b35; color: white; transform: translateY(-5px); border-color: #ff6b35; }
+    .value-box i { font-size: 2.5rem; color: #ff6b35; margin-bottom: 20px; transition: 0.3s; }
+    .value-box:hover i { color: white; }
+    .value-title { font-weight: 700; margin-bottom: 10px; font-size: 1.2rem; }
+
+    /* Footer */
+    footer.l { padding: 50px 20px 20px; background-color: #1a1a1a; color: #ccc; border-radius: 10px 10px 0 0; margin-top: auto; }
+    footer h5 { color: #ff6b35; font-weight: bold; margin-bottom: 20px; }
+    footer ul li { margin-bottom: 10px; }
+    footer a { color: #ccc; text-decoration: none; transition: 0.3s; }
+    footer a:hover { color: #ff6b35; padding-left: 5px; }
+    .contact-row { display: flex; align-items: flex-start; margin-bottom: 15px; }
+    .contact-icon { color: #ff6b35; margin-right: 10px; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold text-danger" href="index.html">
+        <img src="./download.jpeg" width="30" height="30" alt="" /> Magic Food
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="./about.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="./contact.html">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="./Reservation.html">Reservation</a></li>
+          <li class="nav-item"><a class="nav-link" href="./view_category.html">Categories</a></li>
+          
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="billing.html">
+              <i class="fas fa-shopping-cart" style="font-size: 22px; color: #000; position: relative;">
+                <span class="cart-badge" id="cart-count">0</span>
+              </i>
+            </a>
+          </li>
+
+          <li class="nav-item ms-2" id="nav-login-btn">
+             <a href="userlogin.html" class="btn btn-login text-decoration-none">Login</a>
+          </li>
+
+          <li class="nav-item dropdown ms-2" id="nav-user-profile" style="display: none;">
+            <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle text-primary fa-lg me-1"></i> <span id="user-name-display">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                <li><a class="dropdown-item py-2" href="orders.html"><i class="fas fa-box-open me-2 text-warning"></i>My Orders</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="about-hero">
+    <div class="about-hero-content">
+        <h1>Our Story</h1>
+        <p>From a small kitchen to the city's favorite food destination. We serve passion on a plate.</p>
+    </div>
+  </div>
+
+  <div class="container story-section">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="story-img-container">
+                <img src="kit.jpg" class="story-img" alt="Our Kitchen">
+            </div>
+        </div>
+        <div class="col-lg-6 ps-lg-5">
+            <div class="story-card">
+                <h5 class="text-uppercase text-danger fw-bold mb-2">Since 2024</h5>
+                <h2 class="fw-bold display-6 mb-4">We Serve <span style="color: #ff6b35;">Magic</span> in Every Bite.</h2>
+                <p class="text-muted lead fs-6">
+                    Magic Food wasn't built in a boardroom; it was built in a kitchen. We started with a simple mission: to make fast food that doesn't taste like fast food.
+                </p>
+                <p class="text-muted fs-6">
+                    We believe in <strong>fresh ingredients</strong>, <strong>bold flavors</strong>, and <strong>zero shortcuts</strong>. Whether it's our hand-tossed pizza dough made fresh daily or our burgers grilled to perfection, we refuse to compromise on quality.
+                </p>
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Fresh Vegetables</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Halal Meat</li>
+                        </ul>
+                    </div>
+                    <div class="col-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Expert Chefs</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Fast Delivery</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4 mb-md-0 stat-item">
+                <i class="fas fa-smile"></i>
+                <div class="stat-num">50k+</div>
+                <div class="stat-label">Happy Eaters</div>
+            </div>
+            <div class="col-md-3 col-6 mb-4 mb-md-0 stat-item">
+                <i class="fas fa-pizza-slice"></i>
+                <div class="stat-num">100+</div>
+                <div class="stat-label">Menu Items</div>
+            </div>
+            <div class="col-md-3 col-6 stat-item">
+                <i class="fas fa-user-friends"></i>
+                <div class="stat-num">25</div>
+                <div class="stat-label">Expert Staff</div>
+            </div>
+            <div class="col-md-3 col-6 stat-item">
+                <i class="fas fa-star"></i>
+                <div class="stat-num">4.9</div>
+                <div class="stat-label">Rating</div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="container mb-5">
+    <h2 class="text-center fw-bold mb-5 display-6">Why Choose Magic Food?</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="value-box">
+                <i class="fas fa-motorcycle"></i>
+                <div class="value-title">Lightning Fast Delivery</div>
+                <p class="text-muted small">Hunger doesn't wait, and neither should you. We deliver piping hot food in record time.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="value-box">
+                <i class="fas fa-carrot"></i>
+                <div class="value-title">100% Fresh Ingredients</div>
+                <p class="text-muted small">We source our veggies and meats daily from local farms. No frozen nonsense.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="value-box">
+                <i class="fas fa-heart"></i>
+                <div class="value-title">Made with Love</div>
+                <p class="text-muted small">Our secret ingredient is passion. Every dish is crafted to bring a smile to your face.</p>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="container mb-5 pb-5">
+    <h2 class="text-center fw-bold mb-5 display-6">Meet The Masters</h2>
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-3 col-sm-6">
+            <div class="team-card">
+                <div class="team-img-box">
+                    <img src="chief.jpg" class="team-img" alt="Chef">
+                    <div class="social-overlay">
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Arshi Patel</div>
+                    <div class="team-role">Head Chef</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="team-card">
+                <div class="team-img-box">
+                    <img src="https://images.unsplash.com/photo-1581299894007-aaa50297cf16?q=80&w=687&auto=format&fit=crop" class="team-img" alt="Chef">
+                    <div class="social-overlay">
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Niraj Singh</div>
+                    <div class="team-role">Sous Chef</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="team-card">
+                <div class="team-img-box">
+                    <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=687&auto=format&fit=crop" class="team-img" alt="Chef">
+                    <div class="social-overlay">
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Amit Verma</div>
+                    <div class="team-role">Pizza Artist</div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <footer class="l w-100">
+    <div class="container-fluid">
+      <div class="row text-start">
+          <div class="col-md-4 mb-4"><h5>About Us</h5><p class="small">Magic Food is a leading fast-food destination, specializing in high-quality burgers, pizzas, and refreshing drinks.</p></div>
+          <div class="col-md-4 mb-4"><h5>Quick Links</h5><ul class="list-unstyled"><li><a href="index.html">Home</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li><li><a href="billing.html">My Cart</a></li><li><a href="userlogin.html">Login / Register</a></li></ul></div>
+          <div class="col-md-4 mb-4"><h5>Contact Info</h5><div class="contact-row"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span><span class="small">GIDC Phase-2, Dared,<br>Jamnagar, Gujarat - 361004</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-phone-alt"></i></span><span class="small">+91 76007 95003</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-envelope"></i></span><span class="small">baidiyavadararaj@gmail.com</span></div></div>
+      </div>
+      <hr class="border-secondary my-4">
+      <div class="row align-items-center">
+          <div class="col-md-6 text-md-start text-center small mb-2 mb-md-0">&copy; 2026 <strong>Magic Food Items</strong>. All Rights Reserved.</div>
+          <div class="col-md-6 text-md-end text-center"><img src="./play_store.png" alt="Play Store" style="height: 35px; margin-right: 10px; cursor:pointer;" /><img src="./app_store.png" alt="App Store" style="height: 35px; cursor:pointer;" /></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- Login Check & Cart Badge Logic ---
+    function checkLoginStatus() {
+        const user = localStorage.getItem('user');
+        if(user) {
+            document.getElementById('nav-login-btn').style.display = 'none';
+            document.getElementById('nav-user-profile').style.display = 'block';
+            document.getElementById('user-name-display').innerText = JSON.parse(user).name.split(' ')[0];
+        }
+    }
+
+    function logout() {
+        if(confirm("Logout?")) {
+            localStorage.removeItem('user');
+            window.location.reload(); 
+        }
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('checkoutCart')) || [];
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const badge = document.getElementById('cart-count');
+        if(badge) badge.innerText = count;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginStatus();
+        updateCartCount();
+    });
+
+    // --- SECURITY: Disable Right Click & Inspect ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    
+    document.onkeydown = function(e) {
+      if (e.keyCode == 123) return false; // F12 (Inspect)
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C
+      if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J
+      if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U (View Source)
+      if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; // Ctrl+S (Save)
+      if (e.ctrlKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+C (Copy)
+      if (e.ctrlKey && e.keyCode == 'A'.charCodeAt(0)) return false; // Ctrl+A (Select All)
+    };
+  </script>
+
+</body>
+</html>

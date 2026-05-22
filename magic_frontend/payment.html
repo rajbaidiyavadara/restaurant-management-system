@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Payment</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="icon" href="download.jpeg" type="image/x-icon">
+  
+  <style>
+    /* Same Styles as before */
+    :root { --primary: #ff6b35; --sidebar-bg: #212529; --light-bg: #f9f5f0; }
+    body { background-color: #f5f5f5; font-family: 'Segoe UI', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .payment-container { max-width: 900px; width: 100%; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); display: flex; flex-wrap: wrap; margin: 20px; min-height: 500px; }
+    .payment-sidebar { flex: 0 0 320px; background: var(--sidebar-bg); color: white; padding: 35px 25px; display: flex; flex-direction: column; }
+    .amount-box { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+    .amount-box h2 { margin: 5px 0 0; font-weight: 700; color: #ffb74d; font-size: 2rem; }
+    .method-item { padding: 14px 20px; margin-bottom: 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; font-weight: 500; color: rgba(255,255,255,0.8); }
+    .method-item:hover { color: white; }
+    .method-item.active { background: white; color: var(--sidebar-bg); font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .method-item i { width: 30px; font-size: 1.1rem; }
+    .payment-content { flex: 1; padding: 40px 50px; background: white; position: relative; }
+    .payment-section { display: none; animation: fadeIn 0.4s ease; }
+    .payment-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .upi-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+    .upi-card { border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px 10px; text-align: center; cursor: pointer; transition: all 0.2s; background: white; }
+    .upi-card:hover { border-color: var(--primary); background: #fffcf9; }
+    .upi-card.selected { border: 2px solid var(--primary); background: #fff5ee; box-shadow: 0 5px 15px rgba(255, 107, 53, 0.1); }
+    .brand-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+    .gpay-color { color: #4285F4; } .phonepe-color { color: #6739b7; } .paytm-color { color: #00b9f1; }
+    .upi-specific-input { display: none; margin-top: 20px; padding: 25px; background: #f8f9fa; border-radius: 12px; border: 1px dashed #ccc; text-align: center; }
+    .upi-specific-input.show { display: block; animation: slideDown 0.3s ease; }
+    .qr-img { width: 200px; height: 200px; mix-blend-mode: multiply; margin-bottom: 15px; }
+    .action-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; font-size: 1.2rem; font-weight: 700; border-radius: 12px; margin-top: 20px; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 25px rgba(255, 107, 53, 0.25); }
+    .action-btn:hover { background: #e55a2b; transform: translateY(-2px); box-shadow: 0 15px 30px rgba(255, 107, 53, 0.35); }
+    .cancel-link { display: block; text-align: center; margin-top: 20px; color: #888; text-decoration: none; font-weight: 500; font-size: 0.9rem;}
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: center; flex-direction: column; }
+    .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+    .success-box { background: white; padding: 40px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; animation: zoomIn 0.3s ease; }
+    .success-icon { width: 70px; height: 70px; background: #4caf50; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 35px; margin: 0 auto 20px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @media(max-width: 768px) { .payment-container { flex-direction: column; } .payment-sidebar { width: 100%; padding: 20px; flex: none; } .payment-content { padding: 30px 20px; } .upi-options { grid-template-columns: repeat(3, 1fr); } }
+  </style>
+</head>
+<body>
+
+  <div class="payment-container">
+    <div class="payment-sidebar">
+      <div class="amount-box">
+        <small>Total Payable</small>
+        <h2>₹<span id="display-amount">0.00</span></h2>
+      </div>
+      <div class="method-item active" onclick="switchMethod('upi')"><i class="fas fa-mobile-alt"></i> UPI / Wallets</div>
+      <div class="method-item" onclick="switchMethod('card')"><i class="far fa-credit-card"></i> Card Payment</div>
+      <div class="method-item" onclick="switchMethod('netbanking')"><i class="fas fa-university"></i> Net Banking</div>
+      <div class="method-item" onclick="switchMethod('cod')"><i class="fas fa-box-open"></i> Cash on Delivery</div>
+    </div>
+
+    <div class="payment-content">
+      <div id="upi" class="payment-section active">
+        <div class="payment-header"><h3>Select UPI App</h3></div>
+        <div class="upi-options">
+          <div class="upi-card" onclick="showUpiInput('gpay', this)"><i class="fab fa-google brand-icon gpay-color"></i><div class="brand-name">Google Pay</div></div>
+          <div class="upi-card" onclick="showUpiInput('phonepe', this)"><i class="fas fa-parking brand-icon phonepe-color"></i><div class="brand-name">PhonePe</div></div>
+          <div class="upi-card" onclick="showUpiInput('paytm', this)"><i class="fas fa-wallet brand-icon paytm-color"></i><div class="brand-name">Paytm</div></div>
+        </div>
+        <div id="input-gpay" class="upi-specific-input"><h6 class="text-muted mb-3">Scan with Google Pay</h6><img id="qr-gpay" class="qr-img"><input type="text" id="gpay-upi" class="form-control mb-2" placeholder="Enter UPI ID"></div>
+        <div id="input-phonepe" class="upi-specific-input"><h6 class="text-muted mb-3">Scan with PhonePe</h6><img id="qr-phonepe" class="qr-img"><input type="text" id="phonepe-upi" class="form-control mb-2" placeholder="Enter UPI ID"></div>
+        <div id="input-paytm" class="upi-specific-input"><h6 class="text-muted mb-3">Scan with Paytm</h6><img id="qr-paytm" class="qr-img"><input type="text" id="paytm-upi" class="form-control mb-2" placeholder="Enter UPI ID"></div>
+      </div>
+
+      <div id="card" class="payment-section">
+        <div class="payment-header"><h3>Enter Card Details</h3></div>
+        <div class="mb-3"><label class="form-label text-muted small">Card Number</label><input type="text" class="form-control p-3" placeholder="0000 0000 0000 0000"></div>
+        <div class="row">
+          <div class="col-6 mb-3"><label class="form-label text-muted small">Expiry</label><input type="text" class="form-control p-3" placeholder="MM/YY"></div>
+          <div class="col-6 mb-3"><label class="form-label text-muted small">CVV</label><input type="password" class="form-control p-3" placeholder="123"></div>
+        </div>
+        <div class="mb-3"><label class="form-label text-muted small">Card Holder Name</label><input type="text" class="form-control p-3" placeholder="Name on Card"></div>
+      </div>
+
+      <div id="netbanking" class="payment-section">
+        <div class="payment-header"><h3>Net Banking</h3></div>
+        <select class="form-select p-3 mb-3"><option selected>Choose Your Bank...</option><option value="sbi">State Bank of India</option><option value="hdfc">HDFC Bank</option><option value="icici">ICICI Bank</option></select>
+      </div>
+
+      <div id="cod" class="payment-section">
+        <div class="payment-header"><h3>Cash on Delivery</h3></div>
+        <div class="text-center p-4 border rounded bg-light">
+          <i class="fas fa-shipping-fast fa-3x text-secondary mb-3"></i>
+          <h5>Pay on Doorstep</h5>
+          <p class="text-muted small">You can pay via Cash or UPI when the order arrives.</p>
+        </div>
+        <div class="form-check mt-3">
+          <input class="form-check-input" type="checkbox" id="cod-confirm">
+          <label class="form-check-label" for="cod-confirm">I agree to pay upon delivery.</label>
+          <div id="cod-error" class="text-danger small mt-1" style="display:none;">Please confirm order</div>
+        </div>
+      </div>
+
+      <button id="main-action-btn" class="action-btn" onclick="processAction()">Pay ₹<span id="btn-amount">0.00</span></button>
+      <a href="index.html" class="cancel-link">Cancel Payment</a>
+    </div>
+  </div>
+
+  <div class="overlay" id="processing-overlay"><div class="spinner"></div><h4 class="text-white" id="process-text">Processing Payment...</h4></div>
+  
+  <div class="overlay" id="success-overlay">
+    <div class="success-box">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h3 id="success-title" class="mb-2">Order Placed!</h3>
+        <p class="text-muted">Redirecting to Live Tracking...</p>
+        <button class="btn btn-dark mt-3 px-4 w-100 py-2" onclick="finishOrder()">Track Live Order</button>
+    </div>
+  </div>
+
+  <script>
+    const MY_UPI_ID = "9586111749@ybl"; 
+    const MY_NAME = "Magic Food"; 
+
+    let currentMethod = 'upi';
+    let selectedUpiApp = ''; 
+    let totalAmount = "0.00";
+
+    window.onload = function() {
+        totalAmount = localStorage.getItem('payableAmount') || "0.00";
+        document.getElementById('display-amount').innerText = totalAmount;
+        document.getElementById('btn-amount').innerText = totalAmount;
+    };
+
+    function switchMethod(methodId) {
+        currentMethod = methodId;
+        document.querySelectorAll('.method-item').forEach(item => item.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.querySelectorAll('.payment-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(methodId).classList.add('active');
+        
+        const btn = document.getElementById('main-action-btn');
+        if (methodId === 'cod') {
+            btn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Place Order Now`;
+            btn.style.background = "#2f4858";
+        } else {
+            btn.innerHTML = `Pay ₹${totalAmount}`;
+            btn.style.background = "#ff6b35";
+        }
+        document.getElementById('cod-error').style.display = 'none';
+    }
+
+    function showUpiInput(appId, cardElement) {
+        selectedUpiApp = appId;
+        document.querySelectorAll('.upi-card').forEach(c => c.classList.remove('selected'));
+        cardElement.classList.add('selected');
+        document.querySelectorAll('.upi-specific-input').forEach(input => input.classList.remove('show'));
+        const targetInput = document.getElementById('input-' + appId);
+        if(targetInput) targetInput.classList.add('show');
+        
+        const upiUrl = `upi://pay?pa=${MY_UPI_ID}&pn=${encodeURIComponent(MY_NAME)}&am=${totalAmount}&cu=INR`;
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiUrl)}`;
+        document.getElementById('qr-' + appId).src = qrApiUrl;
+        document.getElementById('main-action-btn').innerHTML = `Pay via ${appId.toUpperCase()}`;
+    }
+
+    // --- MAIN FUNCTION TO CALL BACKEND ---
+    async function processAction() {
+        if (currentMethod === 'upi' && !selectedUpiApp) { alert("Please select a UPI App"); return; }
+        if (currentMethod === 'cod' && !document.getElementById('cod-confirm').checked) { 
+            document.getElementById('cod-error').style.display = 'block'; return; 
+        }
+
+        const overlay = document.getElementById('processing-overlay');
+        overlay.style.display = 'flex';
+
+        // Retrieve Data from LocalStorage
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : { phone: 'Guest' };
+        const cartItems = JSON.parse(localStorage.getItem('checkoutCart')) || [];
+        const billingData = JSON.parse(localStorage.getItem('billingData')) || {};
+
+        let finalAddress = billingData.address || user.address || "Address Not Provided";
+
+        // Prepare Data for Server
+        const orderData = {
+            phone: billingData.phone || user.phone || "9999999999",
+            items: cartItems,
+            total: totalAmount,
+            address: finalAddress,
+            method: currentMethod
+        };
+
+        try {
+            // CALL SERVER API (Ensure Node.js is running)
+            const response = await fetch('http://localhost:3000/order',{
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+
+            const result = await response.json();
+
+            overlay.style.display = 'none';
+
+            if (result.success) {
+                // Clear Cart
+                localStorage.removeItem('checkoutCart');
+                localStorage.removeItem('payableAmount');
+                localStorage.removeItem('billingData');
+
+                // Show Success & Auto Redirect
+                document.getElementById('success-overlay').style.display = 'flex';
+                
+                // Redirect to ORDERS.HTML after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'orders.html';
+                }, 2000);
+
+            } else {
+                alert("❌ Order Failed: " + result.error);
+            }
+        } catch (error) {
+            console.error(error);
+            overlay.style.display = 'none';
+            alert("⚠️ Server Connection Failed! Please run 'node server.js'");
+        }
+    }
+
+    // Manual Redirect Button
+    function finishOrder() { window.location.href = 'orders.html'; }
+  </script>
+
+  <style> body { -webkit-user-select: none; user-select: none; } img { -webkit-user-drag: none; pointer-events: none; } </style>
+  <script> document.addEventListener('contextmenu', e => e.preventDefault()); document.onkeydown = e => { if(e.keyCode == 123) return false; }; </script>
+
+</body>
+</html>

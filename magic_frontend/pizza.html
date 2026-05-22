@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizza Menu - Magic Food</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="icon" href="./download.jpeg" type="image/x-icon">
+
+  <style>
+    /* --- Global & Content Protection --- */
+    body { 
+        background-color: #f8f9fa; 
+        font-family: 'Segoe UI', sans-serif;
+        /* -webkit-user-select: none;
+        user-select: none; */
+    }
+    
+    img {
+        -webkit-user-drag: none;
+        pointer-events: none;
+    }
+
+    /* --- Navbar Styling (Matches Index Exactly) --- */
+    .navbar { 
+        background: white; 
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); 
+        height: 80px; /* Fixed Height */
+        display: flex;
+        align-items: center;
+        z-index: 1030; 
+        padding: 0; 
+    }
+    .navbar-brand { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    .nav-link { color: #555; font-weight: 600; transition: 0.3s; margin: 0 8px; }
+    .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { color: #ff6b35 !important; }
+    .btn-login { border: 2px solid #0d6efd; color: #0d6efd; font-weight: 600; border-radius: 50px; padding: 6px 22px; transition: 0.3s; }
+    .btn-login:hover { background: #0d6efd; color: white; }
+
+    /* --- Sidebar Styling (Fixed, No Scrollbar) --- */
+    .sidebar { 
+        background-color: #212529; 
+        position: sticky; 
+        top: 80px; /* Matches Navbar Height */
+        height: calc(100vh - 80px); /* Fills remaining height */
+        overflow-y: auto; 
+        padding-top: 20px; 
+        z-index: 100; 
+        
+        /* Hide Scrollbar */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .sidebar::-webkit-scrollbar { display: none; }
+
+    .sidebar .nav-link { 
+        color: rgba(255,255,255,0.8); 
+        margin-bottom: 5px; 
+        transition: 0.3s; 
+    }
+    .sidebar .nav-link:hover { 
+        background-color: #343a40; 
+        color: white; 
+        padding-left: 20px; 
+    }
+    .sidebar .nav-link.active { 
+        background-color: #ff6b35; 
+        color: white; 
+    }
+
+    /* --- Hero & Search Styling (Pizza Theme) --- */
+    .hero-section {
+        background: linear-gradient(135deg, #2f4858, #ff6b35); /* Pizza Orange/Red Gradient */
+        padding: 60px 20px;
+        border-radius: 0 0 30px 30px;
+        color: white;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    /* Search Box */
+    .search-box { position: relative; max-width: 600px; margin: 0 auto 20px auto; }
+    .search-input { width: 100%; padding: 15px 25px; padding-right: 55px; border-radius: 50px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-size: 1.1rem; }
+    .search-input:focus { outline: none; box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4); }
+    .search-btn { position: absolute; right: 5px; top: 5px; height: 46px; width: 46px; border-radius: 50%; background: #ff6b35; color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    /* Suggestions */
+    .suggestions-list { position: absolute; top: 100%; left: 0; width: 100%; background: white; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); z-index: 1000; margin-top: 10px; max-height: 250px; overflow-y: auto; display: none; text-align: left; }
+    .suggestion-item { padding: 12px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; color: #333; }
+    .suggestion-item:hover { background-color: #fff0f5; color: #ff6b35; }
+    .suggestion-img { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; margin-right: 15px; }
+
+    /* Filter Buttons */
+    .filter-scroll { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .filter-btn { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.4); padding: 8px 20px; border-radius: 30px; transition: all 0.3s; cursor: pointer; font-weight: 600; backdrop-filter: blur(5px); }
+    .filter-btn:hover, .filter-btn.active { background: white; color: #ff6b35; transform: translateY(-2px); }
+
+    /* Card Styling */
+    .card { border: none; border-radius: 16px; background: white; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+    .card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
+    .img-container { height: 220px; overflow: hidden; position: relative; }
+    .card-img-top { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .card:hover .card-img-top { transform: scale(1.08); }
+    .card-body { padding: 25px 20px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+    .card-title { font-weight: 800; color: #2c3e50; margin-bottom: 8px; font-size: 1.2rem; }
+    .card-text { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5; }
+    .price-tag { font-size: 1.4rem; font-weight: 800; color: #e63946; display: block; margin-bottom: 20px; }
+
+    /* Buttons */
+    .btn-add-cart { border: 2px solid #e74c3c; color: #e74c3c; background: transparent; font-weight: 700; border-radius: 50px; padding: 8px 20px; transition: 0.3s; font-size: 0.9rem; }
+    .btn-add-cart:hover { background: #e74c3c; color: white; }
+    .btn-buy-now { background-color: #FFD814; color: #000; border: none; font-weight: 700; border-radius: 50px; padding: 10px 25px; transition: 0.3s; font-size: 0.9rem; }
+    .btn-buy-now:hover { background-color: #f7ca00; transform: scale(1.05); }
+
+    /* Footer */
+    footer.l { padding: 50px 20px 20px; background-color: #1a1a1a; color: #ccc; border-radius: 10px 10px 0 0; margin-top: auto; }
+    footer h5 { color: #ff6b35; font-weight: bold; margin-bottom: 20px; }
+    footer ul li { margin-bottom: 10px; }
+    footer a { color: #ccc; text-decoration: none; transition: 0.3s; }
+    footer a:hover { color: #ff6b35; padding-left: 5px; }
+    .contact-row { display: flex; align-items: flex-start; margin-bottom: 15px; }
+    .contact-icon { color: #ff6b35; margin-right: 10px; font-size: 1.1rem; }
+
+    /* Cart Icon */
+    .cart-icon { position: relative; font-size: 22px; color: #000; margin-right: 20px; cursor: pointer; }
+    .cart-badge { position: absolute; top: -8px; right: -10px; background: red; color: white; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 50%; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+    .cart-item-image { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px; }
+    
+    #toast { visibility: hidden; min-width: 250px; margin-left: -125px; background-color: #333; color: #fff; text-align: center; border-radius: 30px; padding: 15px; position: fixed; z-index: 1050; left: 50%; bottom: 30px; font-size: 16px; }
+    #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+    @keyframes fadein { from {bottom:0; opacity:0;} to {bottom:30px; opacity:1;} }
+    @keyframes fadeout { from {bottom:30px; opacity:1;} to {bottom:0; opacity:0;} }
+
+    @media (max-width: 768px) { .sidebar { position: static; height: auto; padding: 20px; } }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container-fluid px-4 h-100">
+      <a class="navbar-brand fw-bold text-danger" href="index.html">
+        <img src="./download.jpeg" width="30" height="30" alt="" /> Magic Food
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link" href="./index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="./about.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="./contact.html">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="./Reservation.html">Reservation</a></li>
+          <li class="nav-item"><a class="nav-link" href="./view_category.html">Categories</a></li>
+          
+          <li class="nav-item ms-2">
+            <a class="nav-link" id="cart-icon-link">
+              <i class="fas fa-shopping-cart cart-icon"><span class="cart-badge" id="cart-count">0</span></i>
+            </a>
+          </li>
+
+          <li class="nav-item ms-2" id="nav-login-btn">
+             <a href="userlogin.html" class="btn btn-login text-decoration-none">Login</a>
+          </li>
+
+          <li class="nav-item dropdown ms-2" id="nav-user-profile" style="display: none;">
+            <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle text-primary fa-lg me-1"></i> <span id="user-name-display">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                <li><a class="dropdown-item py-2" href="orders.html"><i class="fas fa-box-open me-2 text-warning"></i>My Orders</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid p-0">
+    <div class="row g-0">
+      
+      <div class="col-md-2 sidebar d-none d-md-block">
+        <h4 class="text-white mb-4 px-3"><i class="fas fa-utensils me-2"></i>Menu</h4>
+        <nav class="nav flex-column w-100">
+          <a class="nav-link" href="./index.html">Home</a>
+          <a class="nav-link active" href="./pizza.html">Pizza</a>
+          <a class="nav-link" href="./burger.html">Burger</a>
+          <a class="nav-link" href="./french.html">French Fries</a>
+          <a class="nav-link" href="./coldDrink.html">MilkShakes</a>
+          <a class="nav-link" href="./sandwich.html">Sandwiches</a>
+          <a class="nav-link" href="./salad.html">Salads</a>
+        </nav>
+      </div>
+
+      <div class="col-md-10 bg-light d-flex flex-column min-vh-100 p-0">
+        
+        <div class="hero-section">
+            <h1 class="fw-bold mb-3">Delicious Pizzas</h1>
+            <p class="mb-4 text-light opacity-75">Hot, Cheesy, and Fresh Pizzas Delivered to Your Doorstep</p>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search Pizza (e.g. Mexican, Paneer)..." onkeyup="handleSearch(this.value)">
+                <button class="search-btn" onclick="triggerSearch()"><i class="fas fa-search"></i></button>
+                <div id="suggestions" class="suggestions-list"></div>
+            </div>
+
+            <div class="filter-scroll">
+                <button class="filter-btn active" onclick="filterMenu('all', this)">All Pizzas</button>
+                <button class="filter-btn" onclick="filterMenu('veg', this)">Veg Only</button>
+                <button class="filter-btn" onclick="filterMenu('non-veg', this)">Non-Veg</button>
+                <button class="filter-btn" onclick="filterMenu('cheap', this)">Under 300</button>
+            </div>
+        </div>
+
+        <div class="p-4 flex-grow-1">
+          <div class="row g-4" id="pizza-grid">
+             <div class="col-12 text-center text-muted p-5">Loading Pizzas...</div>
+          </div>
+        </div>
+
+        <footer class="l w-100">
+          <div class="container-fluid">
+            <div class="row text-start">
+                <div class="col-md-4 mb-4"><h5>About Us</h5><p class="small">Magic Food is a leading fast-food destination, specializing in high-quality burgers, pizzas, and refreshing drinks.</p></div>
+                <div class="col-md-4 mb-4"><h5>Quick Links</h5><ul class="list-unstyled"><li><a href="index.html">Home</a></li><li><a href="pizza.html">All Products</a></li><li><a href="Reservation.html">Reservation</a></li><li><a href="billing.html">My Cart</a></li><li><a href="userlogin.html">Login / Register</a></li></ul></div>
+                <div class="col-md-4 mb-4"><h5>Contact Info</h5><div class="contact-row"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span><span class="small">GIDC Phase-2, Dared,<br>Jamnagar, Gujarat - 361004</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-phone-alt"></i></span><span class="small">+91 76007 95003</span></div><div class="contact-row"><span class="contact-icon"><i class="fas fa-envelope"></i></span><span class="small">baidiyavadararaj@gmail.com</span></div></div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start text-center small mb-2 mb-md-0">&copy; 2026 <strong>Magic Food Items</strong>. All Rights Reserved.</div>
+                <div class="col-md-6 text-md-end text-center"><img src="./play_store.png" alt="Play Store" style="height: 35px; margin-right: 10px; cursor:pointer;" /><img src="./app_store.png" alt="App Store" style="height: 35px; cursor:pointer;" /></div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Added to cart</div>
+
+  <div class="modal fade" id="cartModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title fw-bold"><i class="fas fa-shopping-bag me-2"></i>Your Cart</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="cart-items-container"></div>
+        <div class="modal-footer bg-light">
+          <div class="w-100">
+            <div class="d-flex justify-content-between mb-2">
+              <h5 class="text-secondary">Total:</h5>
+              <h5 class="fw-bold text-success" id="cart-total">₹0</h5>
+            </div>
+            <button class="btn btn-dark w-100 py-2" onclick="proceedToBilling()">
+              Proceed to Billing <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Pizza Data
+    const pizzaItems = [
+        { name: "Mexican Pizza", desc: "Spicy Mexican herbs, tangy sauce, onions.", price: 299, image: "./pizza1.jpg", keywords: "piza spicy veg mexican italian hot" },
+        { name: "Veg Pizza", desc: "Fresh vegetables like capsicum, tomato, onion.", price: 399, image: "./pizza2.jpg", keywords: "piza vegetable garden healthy veg" },
+        { name: "Mania Pizza", desc: "Soft base, light toppings of cheese, onion.", price: 350, image: "./pizza3.jpg", keywords: "piza mania cheese tomato onion" },
+        { name: "Paneer Pizza", desc: "Soft paneer cubes with spicy sauce.", price: 299, image: "./pizza4.jpg", keywords: "piza paner cottage cheese veg" },
+        { name: "Golden Corn Pizza", desc: "Topped with sweet golden corn, creamy cheese.", price: 250, image: "./pizza5.jpg", keywords: "piza sweet corn american veg" },
+        { name: "Roman Corn Pizza", desc: "Thin-crust pizza with golden corn and spices.", price: 230, image: "./pizza6.jpg", keywords: "piza thin crust italian" }
+    ];
+
+    let cart = [];
+    let cartModal = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initCart();
+      checkLoginStatus();
+      renderPizzas(pizzaItems); 
+      const modalElement = document.getElementById('cartModal');
+      if (modalElement) { cartModal = new bootstrap.Modal(modalElement); }
+      const cartIcon = document.getElementById('cart-icon-link');
+      if (cartIcon) { cartIcon.addEventListener('click', showCart); }
+    });
+
+    // --- Render Logic ---
+    function renderPizzas(items) {
+        const container = document.getElementById('pizza-grid');
+        if (!items || items.length === 0) {
+            container.innerHTML = '<div class="col-12 text-center text-muted">No Pizzas found.</div>';
+            return;
+        }
+        container.innerHTML = items.map(item => `
+            <div class="col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="img-container">
+                        <img src="${item.image}" class="card-img-top" alt="${item.name}" onerror="this.src='https://via.placeholder.com/200'">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">${item.name}</h5>
+                        <p class="card-text small">${item.desc}</p>
+                        <span class="price-tag">₹${item.price}</span>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn-add-cart" onclick="addToCart('${item.name}', ${item.price}, '${item.image}')">Add to Cart</button>
+                            <button class="btn-buy-now" onclick="buyNow('${item.name}', ${item.price}, '${item.image}')">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // --- Search & Filter ---
+    function handleSearch(query) {
+        query = query.toLowerCase();
+        const suggestionsBox = document.getElementById('suggestions');
+        
+        const matches = pizzaItems.filter(item => {
+            const searchText = (item.name + " " + item.desc + " " + item.keywords).toLowerCase();
+            return searchText.includes(query);
+        });
+
+        if (query.length > 0 && matches.length > 0) {
+            suggestionsBox.style.display = 'block';
+            suggestionsBox.innerHTML = matches.slice(0, 5).map(item => `
+                <div class="suggestion-item" onclick="selectSuggestion('${item.name}')">
+                    <img src="${item.image}" class="suggestion-img">
+                    <div>
+                        <div class="fw-bold small">${item.name}</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            suggestionsBox.style.display = 'none';
+        }
+        renderPizzas(matches);
+    }
+
+    function selectSuggestion(name) {
+        document.getElementById('searchInput').value = name;
+        document.getElementById('suggestions').style.display = 'none';
+        const exactMatch = pizzaItems.filter(item => item.name === name);
+        renderPizzas(exactMatch);
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-box')) { document.getElementById('suggestions').style.display = 'none'; }
+    });
+
+    function filterMenu(type, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        let filtered = [];
+        if (type === 'all') filtered = pizzaItems;
+        else if (type === 'cheap') filtered = pizzaItems.filter(i => i.price < 300);
+        else if (type === 'veg') filtered = pizzaItems; 
+        else if (type === 'non-veg') filtered = []; 
+        renderPizzas(filtered);
+    }
+
+    // --- Cart & User Logic ---
+    function checkLoginStatus() {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            document.getElementById('nav-login-btn').style.display = 'none';
+            document.getElementById('nav-user-profile').style.display = 'block';
+            document.getElementById('user-name-display').innerText = user.name.split(' ')[0];
+        }
+    }
+
+    function logout() {
+        if(confirm("Are you sure you want to logout?")) {
+            localStorage.removeItem('user');
+            window.location.reload(); 
+        }
+    }
+
+    function initCart() { const saved = localStorage.getItem('checkoutCart'); if(saved) { cart = JSON.parse(saved); updateCartCount(); } }
+    function saveCart() { localStorage.setItem('checkoutCart', JSON.stringify(cart)); }
+    
+    function addToCart(name, price, image) {
+      const existingItemIndex = cart.findIndex(item => item.name === name);
+      if (existingItemIndex !== -1) { cart[existingItemIndex].quantity += 1; } 
+      else { cart.push({ name, price, quantity: 1, image }); }
+      updateCartCount(); saveCart(); showToast(`${name} added`);
+    }
+
+    function buyNow(name, price, image) {
+      addToCart(name, price, image);
+      setTimeout(() => { showCart(); }, 500);
+    }
+
+    function updateCartCount() { const total = cart.reduce((t, i) => t + i.quantity, 0); document.getElementById('cart-count').innerText = total; }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      if (toast) { toast.textContent = message; toast.className = 'show'; setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000); }
+    }
+
+    function showCart() {
+      const container = document.getElementById('cart-items-container');
+      const totalEl = document.getElementById('cart-total');
+      if (cart.length === 0) {
+        container.innerHTML = `<div class="text-center p-3 text-muted">Your cart is empty</div>`;
+        totalEl.innerText = '₹0';
+      } else {
+        let total = 0;
+        container.innerHTML = cart.map((item, index) => {
+            total += item.price * item.quantity;
+            return `<div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <div class="d-flex align-items-center">
+                    <img src="${item.image}" class="cart-item-image">
+                    <div><strong>${item.name}</strong><br><small>₹${item.price} x ${item.quantity}</small></div>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-light border" onclick="updateQuantity(${index}, ${item.quantity - 1})">-</button>
+                    <span class="mx-2 fw-bold">${item.quantity}</span>
+                    <button class="btn btn-sm btn-light border" onclick="updateQuantity(${index}, ${item.quantity + 1})">+</button>
+                    <button class="btn btn-sm text-danger ms-2" onclick="removeFromCart(${index})"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+        }).join('');
+        totalEl.innerText = `₹${total}`;
+      }
+      if(cartModal) cartModal.show();
+    }
+
+    function updateQuantity(i, change) { if(cart[i].quantity + change < 1) cart.splice(i, 1); else cart[i].quantity += change; saveCart(); updateCartCount(); showCart(); }
+    function removeFromCart(index) { cart.splice(index, 1); saveCart(); updateCartCount(); showCart(); }
+    function proceedToBilling() { if(cart.length === 0) return; const total = cart.reduce((s, i) => s + i.price * i.quantity, 0) * 1.05 + 50; localStorage.setItem('payableAmount', total.toFixed(2)); saveCart(); window.location.href = 'billing.html'; }
+  </script>
+
+  <style> body { -webkit-user-select: none; user-select: none; } img { -webkit-user-drag: none; pointer-events: none; } </style>
+  <script>
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.onkeydown = function(e) { if(e.keyCode == 123) return false; };
+  </script>
+
+</body>
+</html>

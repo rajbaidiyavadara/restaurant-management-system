@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Magic Food - Home</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="icon" href="./download.jpeg" type="image/x-icon">
+
+  <style>
+    *{
+      text-decoration: none;
+    }
+
+    body { 
+        background-color: #f8f9fa; 
+        font-family: 'Segoe UI', sans-serif;
+        overflow-x: hidden;
+    }
+    
+    img {
+        -webkit-user-drag: none;
+        pointer-events: none;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* --- Navbar Styling --- */
+    .navbar { 
+        background: white; 
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+        padding: 10px 0;
+        min-height: 70px; 
+        z-index: 1050;
+    }
+    .navbar-brand { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    .nav-link { color: #555; font-weight: 600; transition: 0.3s; margin: 0 8px; }
+    .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { color: #ff6b35 !important; }
+    .btn-login { border: 2px solid #0d6efd; color: #0d6efd; font-weight: 600; border-radius: 50px; padding: 6px 22px; transition: 0.3s; white-space: nowrap; }
+    .btn-login:hover { background: #0d6efd; color: white; }
+
+    /* --- Sidebar Styling --- */
+    .sidebar { 
+        background-color: #212529; 
+        position: sticky; 
+        top: 70px; 
+        height: calc(100vh - 70px); 
+        overflow-y: auto; 
+        padding-top: 20px; 
+        z-index: 100; 
+    }
+    .sidebar .nav-link { 
+        color: rgba(255,255,255,0.8); 
+        margin-bottom: 5px; 
+        transition: 0.3s; 
+        padding: 10px 20px;
+    }
+    .sidebar .nav-link:hover { 
+        background-color: #343a40; 
+        color: white; 
+        padding-left: 25px; 
+    }
+    .sidebar .nav-link.active { 
+        background-color: #ff6b35; 
+        color: white; 
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #2f4858, #4b6cb7);
+        padding: 60px 15px;
+        border-radius: 0 0 30px 30px;
+        color: white;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    /* Search Box Styling */
+    .search-box { position: relative; max-width: 600px; margin: 0 auto 20px auto; width: 90%; }
+    .search-input { width: 100%; padding: 12px 25px; padding-right: 55px; border-radius: 50px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-size: 1rem; }
+    .search-input:focus { outline: none; box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4); }
+    .search-btn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); height: 40px; width: 40px; border-radius: 50%; background: #ff6b35; color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    /* Suggestion Box */
+    .suggestions-list { position: absolute; top: 100%; left: 0; width: 100%; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 1100; margin-top: 10px; max-height: 300px; overflow-y: auto; display: none; text-align: left; }
+    .suggestion-item { padding: 12px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; color: #333; }
+    .suggestion-item:hover { background-color: #f8f9fa; color: #ff6b35; }
+    .suggestion-img { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; margin-right: 15px; }
+
+    /* Filter Buttons - Responsive Scroll */
+    .filter-scroll { 
+        display: flex; 
+        justify-content: center; 
+        gap: 10px; 
+        overflow-x: auto; 
+        padding: 10px; 
+        -webkit-overflow-scrolling: touch; 
+        scrollbar-width: none;
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+    .filter-btn { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 20px; border-radius: 30px; backdrop-filter: blur(5px); transition: 0.3s; cursor: pointer; font-size: 0.9rem; white-space: nowrap; }
+    .filter-btn:hover, .filter-btn.active { background: #ff6b35; border-color: #ff6b35; transform: translateY(-2px); }
+
+    /* Category Cards */
+    .cat-link { text-decoration: none; color: inherit; display: block; height: 100%; }
+    .cat-card { background: white; border-radius: 16px; padding: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; align-items: center; }
+    .cat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+    .cat-image-container { width: 100%; height: 120px; border-radius: 12px; overflow: hidden; margin-bottom: 12px; background-color: #f8f9fa; }
+    .cat-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .cat-title { font-weight: 700; font-size: 0.95rem; color: #2f4858; }
+
+    /* Footer */
+    footer.l { padding: 50px 20px 20px; background-color: #1a1a1a; color: #ccc; border-radius: 10px 10px 0 0; margin-top: auto; }
+    footer h5 { color: #ff6b35; font-weight: bold; margin-bottom: 20px; }
+    .contact-row { display: flex; align-items: flex-start; margin-bottom: 15px; }
+    .contact-icon { color: #ff6b35; margin-right: 10px; }
+
+    /* Cart */
+    .cart-icon { position: relative; font-size: 22px; color: #000; cursor: pointer; }
+    .cart-badge { position: absolute; top: -8px; right: -10px; background: red; color: white; font-size: 11px; padding: 2px 5px; border-radius: 50%; }
+    .cart-item-image { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-right: 12px; }
+
+    /* Toast */
+    #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 30px; padding: 12px; position: fixed; z-index: 2000; left: 50%; transform: translateX(-50%); bottom: 30px; }
+    #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+    @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+    @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+
+    /* Responsive Adjustments */
+    @media (max-width: 991px) {
+        .navbar-collapse { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-top: 10px; }
+        .nav-item { width: 100%; text-align: center; margin: 5px 0; }
+        .cart-icon { margin-right: 0; margin-bottom: 10px; }
+    }
+
+    @media (max-width: 768px) { 
+        .sidebar { position: relative; height: auto; top: 0; width: 100%; display: flex !important; flex-direction: row !important; overflow-x: auto; padding: 10px; white-space: nowrap; }
+        .sidebar h4 { display: none; }
+        .sidebar nav { flex-direction: row !important; gap: 10px; }
+        .sidebar .nav-link { margin-bottom: 0; border-radius: 5px; background: #343a40; }
+        .hero-section { padding: 40px 10px; }
+        .hero-section h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container-fluid px-lg-4">
+      <a class="navbar-brand fw-bold text-danger" href="index.html">
+        <img src="./download.jpeg" width="30" height="30" alt="Logo" /> Magic Food
+      </a>
+      
+      <div class="d-flex align-items-center d-lg-none">
+        <a class="nav-link me-3" onclick="showCart()">
+          <i class="fas fa-shopping-cart cart-icon"><span class="cart-badge" id="cart-count-mobile">0</span></i>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="Reservation.html">Reservation</a></li>
+          <li class="nav-item"><a class="nav-link" href="view_category.html">Categories</a></li>
+
+          <li class="nav-item ms-lg-2 d-none d-lg-block">
+            <a class="nav-link" id="cart-icon-link">
+              <i class="fas fa-shopping-cart cart-icon"><span class="cart-badge" id="cart-count">0</span></i>
+            </a>
+          </li>
+
+          <li class="nav-item ms-lg-2" id="nav-login-btn">
+            <a href="userlogin.html" class="btn btn-login">Login</a>
+          </li>
+
+          <li class="nav-item dropdown ms-lg-2" id="nav-user-profile" style="display: none;">
+            <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle text-primary fa-lg me-1"></i> <span id="user-name-display">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+              <li><a class="dropdown-item py-2" href="orders.html"><i class="fas fa-box-open me-2 text-warning"></i>My Orders</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid p-0">
+    <div class="row g-0">
+
+      <div class="col-md-2 sidebar">
+        <h4 class="text-white mb-4 px-3"><i class="fas fa-utensils me-2"></i>Menu</h4>
+        <nav class="nav flex-column w-100">
+          <a class="nav-link active" href="./index.html">Home</a>
+          <a class="nav-link" href="./pizza.html">Pizza</a>
+          <a class="nav-link" href="./burger.html">Burger</a>
+          <a class="nav-link" href="./french.html">Fries</a>
+          <a class="nav-link" href="./coldDrink.html">Shakes</a>
+          <a class="nav-link" href="./sandwich.html">Sandwich</a>
+          <a class="nav-link" href="./salad.html">Salads</a>
+        </nav>
+      </div>
+
+      <div class="col-md-10 bg-light d-flex flex-column min-vh-100 p-0">
+
+        <div class="hero-section">
+          <h1 class="fw-bold mb-3">Delicious Food, Delivered To You</h1>
+          <p class="mb-4 text-light opacity-75">Explore the best taste in town with Magic Food</p>
+
+          <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Try 'Pizza', 'Burger'..."
+              onkeyup="handleSearch(this.value)">
+            <button class="search-btn" onclick="triggerSearch()"><i class="fas fa-search"></i></button>
+            <div id="suggestions" class="suggestions-list"></div>
+          </div>
+
+          <div class="filter-scroll">
+            <button class="filter-btn active" onclick="filterMenu('all', this)">All Items</button>
+            <button class="filter-btn" onclick="filterMenu('veg', this)">Pure Veg</button>
+            <button class="filter-btn" onclick="filterMenu('non-veg', this)">Non-Veg</button>
+            <button class="filter-btn" onclick="filterMenu('best', this)">Best Sellers</button>
+            <button class="filter-btn" onclick="filterMenu('cheap', this)">Under 200</button>
+          </div>
+        </div>
+
+        <div class="p-3 p-lg-4 flex-grow-1">
+          <div class="container-fluid">
+            <h4 class="text-secondary fw-bold mb-4">Explore Menu</h4>
+            <div class="row g-3 g-lg-4" id="menu-grid">
+              <div class="col-12 text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Loading items...</p>
+              </div>
+            </div>
+
+            <h4 class="mt-5 mb-4 text-secondary fw-bold">Browse Categories</h4>
+            <div class="row g-2 g-md-3 mb-5">
+              <div class="col-6 col-md-4 col-lg-2">
+                <a href="burger.html" class="cat-link"><div class="cat-card"><div class="cat-image-container"><img src="./brg.jpg" class="cat-image" alt="Burgers"></div><div class="cat-title">Burgers</div></div></a>
+              </div>
+              <div class="col-6 col-md-4 col-lg-2">
+                <a href="pizza.html" class="cat-link"><div class="cat-card"><div class="cat-image-container"><img src="./pizza2.jpg" class="cat-image" alt="Pizza"></div><div class="cat-title">Pizza</div></div></a>
+              </div>
+              <div class="col-6 col-md-4 col-lg-2">
+                <a href="french.html" class="cat-link"><div class="cat-card"><div class="cat-image-container"><img src="./frr.jpg" class="cat-image" alt="Fries"></div><div class="cat-title">Fries</div></div></a>
+              </div>
+              <div class="col-6 col-md-4 col-lg-2">
+                <a href="coldDrink.html" class="cat-link"><div class="cat-card"><div class="cat-image-container"><img src="./cold.jpg" class="cat-image" alt="Shakes"></div><div class="cat-title">Shakes</div></div></a>
+              </div>
+              <div class="col-6 col-md-4 col-lg-2">
+                <a href="sandwich.html" class="cat-link"><div class="cat-card"><div class="cat-image-container"><img src="./sand.jpg" class="cat-image" alt="Sandwich"></div><div class="cat-title">Sandwich</div></div></a>
+              </div>
+              <div class="col-6 col-md-4 col-lg-2">
+                <a href="salad.html" class="cat-link"><div class="cat-card"><div class="cat-image-container"><img src="./salad.jpg" class="cat-image" alt="Salad"></div><div class="cat-title">Salad</div></div></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="l w-100">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-lg-4 col-md-6 mb-4">
+                <h5>About Us</h5>
+                <p class="small">Magic Food is a leading fast-food destination, specializing in high-quality burgers, pizzas, and refreshing drinks.</p>
+              </div>
+              <div class="col-lg-4 col-md-6 mb-4">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                  <li><a href="index.html">Home</a></li>
+                  <li><a href="pizza.html">All Products</a></li>
+                  <li><a href="Reservation.html">Reservation</a></li>
+                  <li><a href="billing.html">My Cart</a></li>
+                </ul>
+              </div>
+              <div class="col-lg-4 col-md-12 mb-4">
+                <h5>Contact Info</h5>
+                <div class="contact-row"><i class="fas fa-map-marker-alt contact-icon"></i><span class="small">GIDC Phase-2, Dared, Jamnagar, 361004</span></div>
+                <div class="contact-row"><i class="fas fa-phone-alt contact-icon"></i><span class="small">+91 76007 95003</span></div>
+              </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="row align-items-center py-3">
+              <div class="col-md-6 text-center text-md-start small">&copy; 2026 Magic Food Items.</div>
+              <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                <img src="./play_store.png" alt="Play Store" style="height: 30px; margin-right: 10px;" />
+                <img src="./app_store.png" alt="App Store" style="height: 30px;" />
+              </div>
+            </div>
+          </div>
+        </footer>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Added to cart</div>
+
+  <div class="modal fade" id="cartModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title fw-bold"><i class="fas fa-shopping-bag me-2"></i>Your Cart</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="cart-items-container" style="max-height: 60vh; overflow-y: auto;"></div>
+        <div class="modal-footer bg-light">
+          <div class="w-100">
+            <div class="d-flex justify-content-between mb-3">
+              <span class="h5 text-secondary">Total:</span>
+              <span class="h5 fw-bold text-success" id="cart-total">₹0</span>
+            </div>
+            <button type="button" class="btn btn-dark w-100 py-2" onclick="goToBilling()">Proceed to Billing</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const defaultItems = [
+      { name: "Mexican Pizza", desc: "Spicy Mexican herbs, tangy sauce.", price: 299, category: "Pizza", image: "./pizza1.jpg", keywords: "piza spicy veg mexican italian hot" },
+      { name: "Veg Pizza", desc: "Fresh vegetables like capsicum.", price: 399, category: "Pizza", image: "./pizza2.jpg", keywords: "piza vegetable garden healthy veg" },
+      { name: "Mania Pizza", desc: "Soft base, light toppings.", price: 350, category: "Pizza", image: "./pizza3.jpg", keywords: "piza mania cheese tomato onion" },
+      { name: "Paneer Pizza", desc: "Soft paneer cubes with spicy sauce.", price: 299, category: "Pizza", image: "./pizza4.jpg", keywords: "piza paner cottage cheese veg" },
+      { name: "Golden Corn Pizza", desc: "Topped with sweet golden corn.", price: 250, category: "Pizza", image: "./pizza5.jpg", keywords: "piza sweet corn american veg" },
+      { name: "Roman Corn Pizza", desc: "Thin-crust pizza with spices.", price: 230, category: "Pizza", image: "./pizza6.jpg", keywords: "piza thin crust italian" },
+      { name: "Chicken Burger", desc: "Crispy chicken patty.", price: 199, category: "Burger", image: "./burger1.jpg", keywords: "burgr chiken nonveg crispy bun" },
+      { name: "Veggie Delight", desc: "Loaded with fresh veggies.", price: 149, category: "Burger", image: "./burger2.jpg", keywords: "burgr veg vegetable healthy" },
+      { name: "Cheese Burst", desc: "Double cheese layered.", price: 249, category: "Burger", image: "./burger3.webp", keywords: "burgr chese cheesy melt" },
+      { name: "Spicy Mexican", desc: "Spicy patty with jalapenos.", price: 229, category: "Burger", image: "./burger4.jpg", keywords: "burgr hot chilli mexican" },
+      { name: "BBQ Bacon", desc: "Juicy burger with BBQ sauce.", price: 279, category: "Burger", image: "./burger5.webp", keywords: "burgr barbecue meat nonveg pork" },
+      { name: "Mushroom Swiss", desc: "Sautéed mushrooms and cheese.", price: 259, category: "Burger", image: "./burger6.jpeg", keywords: "burgr mushroom veg swiss" },
+      { name: "Air-fried Fries", desc: "Crispy outside, creamy inside.", price: 199, category: "Fries", image: "./fre1.jpg", keywords: "fris potato chips healthy" },
+      { name: "Shoestring Fries", desc: "Thinly sliced, deep-fried.", price: 299, category: "Fries", image: "./fre2.jpg", keywords: "fris thin crispy potato" },
+      { name: "Boardwalk Fries", desc: "Served with Old Bay seasoning.", price: 150, category: "Fries", image: "./fre3.jpg", keywords: "fris salty potato snack" },
+      { name: "Curly Fries", desc: "Spiral-cut and seasoned.", price: 249, category: "Fries", image: "./fre4.jpg", keywords: "fris spiral spicy potato" },
+      { name: "Waffle Fries", desc: "Thick, crispy for dipping.", price: 270, category: "Fries", image: "./fre5.jpg", keywords: "fris waffle thick potato" },
+      { name: "Loaded Fries", desc: "Topped with cheese, bacon.", price: 320, category: "Fries", image: "./fre6.webp", keywords: "fris chese bacon nonveg" },
+      { name: "Oreo Milkshake", desc: "Creamy Oreo delight.", price: 199, category: "Milkshake", image: "./m1.webp", keywords: "shake drink chocolate oreo biscuit" },
+      { name: "Cherry Vanilla", desc: "Sweet cherry blend.", price: 299, category: "Milkshake", image: "./m2.jpg", keywords: "shake fruit vanilla sweet" },
+      { name: "Banana Milkshake", desc: "Thick creamy banana.", price: 150, category: "Milkshake", image: "./m3.jpg", keywords: "shake fruit healthy yellow" },
+      { name: "Strawberry Shake", desc: "Classic strawberry.", price: 180, category: "Milkshake", image: "./m4.jpeg", keywords: "shake berry pink sweet" },
+      { name: "Chocolate Shake", desc: "Rich chocolate blend.", price: 220, category: "Milkshake", image: "./m4.avif", keywords: "shake choco dark cocoa" },
+      { name: "Mango Milkshake", desc: "Fresh mango delight.", price: 170, category: "Milkshake", image: "./m6.jpg", keywords: "shake fruit summer king" },
+      { name: "Club Sandwich", desc: "Triple-layered with chicken.", price: 250, category: "Sandwich", image: "./sandw1.jpg", keywords: "sandwitch nonveg chicken bread" },
+      { name: "Grilled Cheese", desc: "Golden toasted cheese.", price: 180, category: "Sandwich", image: "./sandw3.jpg", keywords: "sandwitch chese toast veg" },
+      { name: "Veggie Sandwich", desc: "Fresh veggies & sauce.", price: 200, category: "Sandwich", image: "./sandw2.jpg", keywords: "sandwitch vegetable healthy veg" },
+      { name: "Chicken Tikka", desc: "Spiced chicken tikka.", price: 270, category: "Sandwich", image: "./sandw4.png", keywords: "sandwitch spicy indian nonveg" },
+      { name: "Egg Mayo", desc: "Creamy egg mayo filling.", price: 190, category: "Sandwich", image: "./sandw5.jpg", keywords: "sandwitch egg boiled nonveg" },
+      { name: "Paneer Tikka", desc: "Grilled paneer cubes.", price: 260, category: "Sandwich", image: "./sandw6.jpg", keywords: "sandwitch cottage cheese veg spicy" },
+      { name: "Caesar Salad", desc: "Crisp romaine & parmesan.", price: 220, category: "Salad", image: "./salad1.jpg", keywords: "salad healthy green diet" },
+      { name: "Greek Salad", desc: "Cucumbers, olives, feta.", price: 240, category: "Salad", image: "./salad2.jpg", keywords: "salad olive feta diet veg" },
+      { name: "Garden Salad", desc: "Fresh mixed greens.", price: 180, category: "Salad", image: "./salad3.jpg", keywords: "salad mix veg basic" },
+      { name: "Grilled Chicken", desc: "Grilled chicken strips.", price: 280, category: "Salad", image: "./salad4.jpg", keywords: "salad nonveg protein gym" },
+      { name: "Fresh Fruit", desc: "Seasonal fruits bowl.", price: 200, category: "Salad", image: "./salad5.jpg", keywords: "salad fruit sweet healthy" },
+      { name: "Pasta Salad", desc: "Cold pasta & veggies.", price: 230, category: "Salad", image: "./salad6.jpg", keywords: "salad pasta italian veg" }
+    ];
+
+    let allMenuItems = [];
+    let cart = [];
+    let cartModal = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      initCart();
+      checkLoginStatus();
+      loadMenuData();
+      const modalElement = document.getElementById('cartModal');
+      if (modalElement) { cartModal = new bootstrap.Modal(modalElement); }
+      const cartIcon = document.getElementById('cart-icon-link');
+      if (cartIcon) { cartIcon.addEventListener('click', showCart); }
+    });
+
+    async function loadMenuData() {
+      try {
+        const response = await fetch('http://localhost:3000/menu');
+        if (response.ok) {
+          const data = await response.json();
+          allMenuItems = data.length > 0 ? data : defaultItems;
+        } else {
+          allMenuItems = defaultItems;
+        }
+      } catch (e) {
+        allMenuItems = defaultItems;
+      }
+      renderMenuItems(allMenuItems);
+    }
+
+    function renderMenuItems(items) {
+      const container = document.getElementById('menu-grid');
+      if (!items || items.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center text-muted">No items found.</div>';
+        return;
+      }
+      container.innerHTML = items.map(item => `
+            <div class="col-xl-3 col-lg-4 col-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="${item.image}" class="card-img-top" onerror="this.src='https://via.placeholder.com/200'" style="height: 150px; object-fit: cover; border-radius: 10px 10px 0 0;">
+                    <div class="card-body p-2 p-md-3 d-flex flex-column">
+                        <h6 class="fw-bold mb-1 text-truncate">${item.name}</h6>
+                        <small class="text-muted d-block mb-2 text-truncate small">${item.description || item.desc}</small>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <span class="text-danger fw-bold">₹${item.price}</span>
+                            <button class="btn btn-sm btn-outline-danger rounded-pill px-2 px-md-3" onclick="addToCart('${item.name}', ${item.price}, '${item.image}')">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function handleSearch(query) {
+      query = query.toLowerCase();
+      const suggestionsBox = document.getElementById('suggestions');
+      const matches = allMenuItems.filter(item => {
+        const searchText = (item.name + " " + item.category + " " + (item.description || item.desc || "") + " " + (item.keywords || "")).toLowerCase();
+        return searchText.includes(query);
+      });
+
+      if (query.length > 0 && matches.length > 0) {
+        suggestionsBox.style.display = 'block';
+        suggestionsBox.innerHTML = matches.slice(0, 5).map(item => `
+                <div class="suggestion-item" onclick="selectSuggestion('${item.name}')">
+                    <img src="${item.image}" class="suggestion-img">
+                    <div><div class="fw-bold small">${item.name}</div><div class="text-muted small" style="font-size: 0.7rem">${item.category}</div></div>
+                </div>
+            `).join('');
+      } else { suggestionsBox.style.display = 'none'; }
+      renderMenuItems(matches);
+    }
+
+    function selectSuggestion(name) {
+      document.getElementById('searchInput').value = name;
+      document.getElementById('suggestions').style.display = 'none';
+      renderMenuItems(allMenuItems.filter(item => item.name === name));
+    }
+
+    function filterMenu(type, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      let filtered = (type === 'all') ? allMenuItems : 
+                     (type === 'cheap') ? allMenuItems.filter(i => i.price < 200) :
+                     (type === 'best') ? allMenuItems.filter(i => i.price > 250) :
+                     (type === 'veg') ? allMenuItems.filter(i => isVeg(i)) :
+                     allMenuItems.filter(i => !isVeg(i));
+      renderMenuItems(filtered);
+    }
+
+    function isVeg(item) {
+      const text = (item.name + " " + (item.description || item.desc || "")).toLowerCase();
+      return !['chicken', 'egg', 'bacon', 'meat', 'nonveg'].some(k => text.includes(k));
+    }
+
+    function addToCart(name, price, image) {
+      const idx = cart.findIndex(item => item.name === name);
+      if (idx !== -1) cart[idx].quantity += 1;
+      else cart.push({ name, price, quantity: 1, image });
+      saveCart(); updateCartCount(); showToast(`${name} added`);
+    }
+
+    function updateCartCount() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const badges = ['cart-count', 'cart-count-mobile'];
+      badges.forEach(id => {
+          const el = document.getElementById(id);
+          if(el) el.innerText = count;
+      });
+    }
+
+    function saveCart() { localStorage.setItem('checkoutCart', JSON.stringify(cart)); }
+    function initCart() { const saved = localStorage.getItem('checkoutCart'); if (saved) { cart = JSON.parse(saved); updateCartCount(); } }
+
+    function showCart() {
+      const container = document.getElementById('cart-items-container');
+      const totalEl = document.getElementById('cart-total');
+      let total = 0;
+      if (cart.length === 0) container.innerHTML = `<div class="text-center p-4">Cart is empty</div>`;
+      else {
+        container.innerHTML = cart.map((item, index) => {
+          total += item.price * item.quantity;
+          return `<div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <div class="d-flex align-items-center">
+                    <img src="${item.image}" class="cart-item-image">
+                    <div><strong class="small">${item.name}</strong><br><small>₹${item.price} x ${item.quantity}</small></div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-light border p-1" onclick="updateQuantity(${index}, ${item.quantity - 1})">-</button>
+                    <span class="mx-2 small">${item.quantity}</span>
+                    <button class="btn btn-sm btn-light border p-1" onclick="updateQuantity(${index}, ${item.quantity + 1})">+</button>
+                </div>
+            </div>`;
+        }).join('');
+      }
+      totalEl.innerText = `₹${total}`;
+      if (cartModal) cartModal.show();
+    }
+
+    function updateQuantity(index, q) { if (q < 1) cart.splice(index, 1); else cart[index].quantity = q; saveCart(); updateCartCount(); showCart(); }
+    function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.className = 'show'; setTimeout(() => t.className = '', 3000); }
+    function checkLoginStatus() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        document.getElementById('nav-login-btn').style.display = 'none';
+        document.getElementById('nav-user-profile').style.display = 'block';
+        document.getElementById('user-name-display').innerText = user.name.split(' ')[0];
+      }
+    }
+    function logout() { localStorage.removeItem('user'); window.location.reload(); }
+    function goToBilling() { if (!localStorage.getItem('user')) { alert("Login first"); window.location.href = 'userlogin.html'; return; } window.location.href = 'billing.html'; }
+  </script>
+</body>
+</html>

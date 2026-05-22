@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cash on Delivery | Magic Food</title>
+  <link rel="icon" href="download.jpeg" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    :root {
+      --orange: #ff6b35;
+      --orange-dark: #e8551f;
+      --orange-glow: rgba(255, 107, 53, 0.18);
+      --dark: #0f0f0f;
+      --dark2: #1a1a1a;
+      --dark3: #242424;
+      --card: #1e1e1e;
+      --border: rgba(255,255,255,0.07);
+      --text: #f0f0f0;
+      --muted: #888;
+      --green: #22c55e;
+      --green-glow: rgba(34, 197, 94, 0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--dark);
+      font-family: 'Nunito', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(255,107,53,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 10% 80%, rgba(255,107,53,0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrap {
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--orange-glow);
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 2px;
+      line-height: 1;
+      color: #fff;
+    }
+    .page-title span { color: var(--orange); }
+    .page-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 6px;
+    }
+
+    /* Amount display */
+    .amount-banner {
+      background: linear-gradient(135deg, var(--orange), #ff9a5c);
+      border-radius: 20px;
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(255,107,53,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .amount-banner::after {
+      content: '₹';
+      position: absolute;
+      right: -10px;
+      top: -20px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 8rem;
+      color: rgba(255,255,255,0.08);
+      line-height: 1;
+    }
+    .amount-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.8);
+    }
+    .amount-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      color: #fff;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+    .amount-note {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.7);
+      margin-top: 2px;
+    }
+    .amount-icon {
+      width: 54px; height: 54px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title i { color: var(--orange); }
+
+    /* Order items */
+    .order-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .order-item:last-child { border-bottom: none; }
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .item-qty {
+      width: 28px; height: 28px;
+      background: var(--orange-glow);
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--orange);
+      flex-shrink: 0;
+    }
+    .item-name { font-size: 0.9rem; font-weight: 600; }
+    .item-price { font-size: 0.9rem; font-weight: 700; color: var(--orange); }
+
+    /* Empty cart */
+    .empty-cart {
+      text-align: center;
+      padding: 20px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .empty-cart i { font-size: 2rem; margin-bottom: 8px; display: block; opacity: 0.4; }
+
+    /* Summary rows */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row .label { color: var(--muted); }
+    .summary-row .value { font-weight: 700; }
+    .summary-row.total { padding-top: 14px; margin-top: 4px; }
+    .summary-row.total .label { color: var(--text); font-weight: 800; font-size: 1rem; }
+    .summary-row.total .value { color: var(--orange); font-size: 1.2rem; font-weight: 800; }
+
+    /* Address */
+    .address-box {
+      background: var(--dark3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .address-box i { color: var(--orange); margin-top: 2px; flex-shrink: 0; }
+    .address-missing { color: var(--muted); font-style: italic; }
+
+    /* COD info strip */
+    .cod-strip {
+      background: var(--green-glow);
+      border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .cod-strip-icon {
+      width: 40px; height: 40px;
+      background: rgba(34,197,94,0.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--green);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .cod-strip-text { font-size: 0.85rem; color: #a0f0b8; font-weight: 600; }
+    .cod-strip-sub { font-size: 0.78rem; color: rgba(160,240,184,0.6); margin-top: 2px; }
+
+    /* Confirm checkbox */
+    .confirm-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--dark3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+    .confirm-wrap:hover { border-color: rgba(255,107,53,0.3); }
+    .confirm-wrap.checked { border-color: var(--orange); background: var(--orange-glow); }
+    .confirm-wrap input[type="checkbox"] { display: none; }
+    .custom-check {
+      width: 22px; height: 22px;
+      border: 2px solid var(--muted);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .confirm-wrap.checked .custom-check {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+    .custom-check i { color: #fff; font-size: 0.75rem; display: none; }
+    .confirm-wrap.checked .custom-check i { display: block; }
+    .confirm-text { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .confirm-error { color: #f87171; font-size: 0.8rem; margin-top: -14px; margin-bottom: 14px; display: none; padding-left: 4px; }
+
+    /* Place order button */
+    .place-btn {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--orange), #ff9a5c);
+      color: #fff;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 8px 28px rgba(255,107,53,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .place-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 36px rgba(255,107,53,0.5);
+    }
+    .place-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--orange); }
+
+    /* Spinner */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .overlay.show { display: flex; }
+
+    .success-card {
+      background: var(--card);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 28px;
+      padding: 44px 36px;
+      text-align: center;
+      max-width: 360px;
+      width: 90%;
+      animation: zoomIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes zoomIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .success-ring {
+      width: 80px; height: 80px;
+      background: var(--green-glow);
+      border: 2px solid rgba(34,197,94,0.4);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 2rem;
+      color: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.3); }
+      50% { box-shadow: 0 0 0 12px rgba(34,197,94,0); }
+    }
+    .success-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .success-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 6px; }
+    .success-id { color: var(--orange); font-weight: 800; font-size: 1rem; margin-bottom: 24px; }
+    .track-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: var(--orange);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .track-btn:hover { opacity: 0.9; }
+
+    /* Processing overlay */
+    .process-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .process-overlay.show { display: flex; }
+    .big-spinner {
+      width: 52px; height: 52px;
+      border: 4px solid rgba(255,107,53,0.2);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .process-text { color: var(--muted); font-size: 0.9rem; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrap">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="brand-pill"><i class="fas fa-utensils"></i> Magic Food</div>
+      <div class="page-title">Cash on <span>Delivery</span></div>
+      <div class="page-sub">Pay when your order arrives at your door</div>
+    </div>
+
+    <!-- Amount Banner -->
+    <div class="amount-banner">
+      <div>
+        <div class="amount-label">Total Payable</div>
+        <div class="amount-value">₹<span id="display-amount">0.00</span></div>
+        <div class="amount-note">Pay in cash or UPI at doorstep</div>
+      </div>
+      <div class="amount-icon"><i class="fas fa-wallet"></i></div>
+    </div>
+
+    <!-- COD Info Strip -->
+    <div class="cod-strip">
+      <div class="cod-strip-icon"><i class="fas fa-shield-alt"></i></div>
+      <div>
+        <div class="cod-strip-text">100% Safe — No advance payment</div>
+        <div class="cod-strip-sub">Your order will be prepared immediately after confirmation</div>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-receipt"></i> Your Order</div>
+      <div id="items-list">
+        <div class="empty-cart"><i class="fas fa-box-open"></i>No items found</div>
+      </div>
+    </div>
+
+    <!-- Bill Summary -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-file-invoice"></i> Bill Summary</div>
+      <div class="summary-row">
+        <span class="label">Subtotal</span>
+        <span class="value">₹<span id="s-subtotal">0.00</span></span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Delivery Fee</span>
+        <span class="value">₹<span id="s-delivery">50.00</span></span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Tax (5%)</span>
+        <span class="value">₹<span id="s-tax">0.00</span></span>
+      </div>
+      <div class="summary-row total">
+        <span class="label">Total to Pay</span>
+        <span class="value">₹<span id="s-total">0.00</span></span>
+      </div>
+    </div>
+
+    <!-- Delivery Address -->
+    <div class="card">
+      <div class="card-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</div>
+      <div class="address-box">
+        <i class="fas fa-location-dot"></i>
+        <span id="delivery-address" class="address-missing">Loading address...</span>
+      </div>
+    </div>
+
+    <!-- Confirm Checkbox -->
+    <div class="confirm-wrap" id="confirm-wrap" onclick="toggleConfirm()">
+      <input type="checkbox" id="cod-confirm" />
+      <div class="custom-check"><i class="fas fa-check"></i></div>
+      <span class="confirm-text">I agree to pay ₹<span id="confirm-amount">0.00</span> on delivery</span>
+    </div>
+    <div class="confirm-error" id="confirm-error">
+      <i class="fas fa-exclamation-circle"></i> Please confirm before placing order
+    </div>
+
+    <!-- Place Order Button -->
+    <button class="place-btn" id="place-btn" onclick="placeOrder()">
+      <i class="fas fa-box"></i> PLACE ORDER
+    </button>
+
+    <a href="billing.html" class="back-link">
+      <i class="fas fa-arrow-left me-1"></i> Back to Cart
+    </a>
+
+  </div>
+
+  <!-- Processing Overlay -->
+  <div class="process-overlay" id="process-overlay">
+    <div class="big-spinner"></div>
+    <div class="process-text">Placing your order...</div>
+  </div>
+
+  <!-- Success Overlay -->
+  <div class="overlay" id="success-overlay">
+    <div class="success-card">
+      <div class="success-ring"><i class="fas fa-check"></i></div>
+      <div class="success-title">Order Placed!</div>
+      <div class="success-sub">Your order is confirmed</div>
+      <div class="success-id" id="success-order-id"></div>
+      <div class="success-sub" style="margin-bottom:20px;">Redirecting to order tracking...</div>
+      <button class="track-btn" onclick="goToOrders()">
+        <i class="fas fa-truck me-2"></i>Track My Order
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ── CONFIG ──
+    const API = 'http://localhost:3000';
+    const DELIVERY_FEE = 50;
+    const TAX_RATE = 0.05;
+
+    let confirmed = false;
+    let cartItems = [];
+    let totalAmount = '0.00';
+
+    // ── INIT ──
+    window.onload = function () {
+      cartItems = JSON.parse(localStorage.getItem('checkoutCart')) || [];
+      totalAmount = localStorage.getItem('payableAmount') || '0.00';
+
+      renderItems();
+      renderSummary();
+      renderAddress();
+
+      document.getElementById('display-amount').textContent = totalAmount;
+      document.getElementById('confirm-amount').textContent = totalAmount;
+    };
+
+    // ── Render cart items ──
+    function renderItems() {
+      const container = document.getElementById('items-list');
+      if (!cartItems.length) return;
+
+      container.innerHTML = cartItems.map(item => `
+        <div class="order-item">
+          <div class="item-left">
+            <div class="item-qty">${item.quantity}</div>
+            <div class="item-name">${item.name}</div>
+          </div>
+          <div class="item-price">₹${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+      `).join('');
+    }
+
+    // ── Render summary ──
+    function renderSummary() {
+      const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+      const tax = subtotal * TAX_RATE;
+      const total = subtotal + tax + DELIVERY_FEE;
+
+      document.getElementById('s-subtotal').textContent = subtotal.toFixed(2);
+      document.getElementById('s-tax').textContent = tax.toFixed(2);
+      document.getElementById('s-total').textContent = total.toFixed(2);
+
+      // Update payable amount to recalculated total
+      totalAmount = total.toFixed(2);
+      document.getElementById('display-amount').textContent = totalAmount;
+      document.getElementById('confirm-amount').textContent = totalAmount;
+      localStorage.setItem('payableAmount', totalAmount);
+    }
+
+    // ── Render delivery address ──
+    function renderAddress() {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const billingData = JSON.parse(localStorage.getItem('billingData') || '{}');
+      const address = billingData.address || user.address || null;
+      const el = document.getElementById('delivery-address');
+
+      if (address) {
+        el.textContent = address;
+        el.classList.remove('address-missing');
+      } else {
+        el.textContent = 'No address saved. Please update your profile.';
+        el.classList.add('address-missing');
+      }
+    }
+
+    // ── Toggle confirm checkbox ──
+    function toggleConfirm() {
+      confirmed = !confirmed;
+      document.getElementById('cod-confirm').checked = confirmed;
+      document.getElementById('confirm-wrap').classList.toggle('checked', confirmed);
+      if (confirmed) document.getElementById('confirm-error').style.display = 'none';
+    }
+
+    // ── Place Order ──
+    async function placeOrder() {
+      if (!confirmed) {
+        document.getElementById('confirm-error').style.display = 'block';
+        document.getElementById('confirm-wrap').style.animation = 'none';
+        setTimeout(() => document.getElementById('confirm-wrap').style.animation = '', 100);
+        return;
+      }
+
+      if (!cartItems.length) {
+        alert('Your cart is empty!');
+        return;
+      }
+
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const billingData = JSON.parse(localStorage.getItem('billingData') || '{}');
+
+      const orderData = {
+        phone: billingData.phone || user.phone || '9999999999',
+        items: cartItems,
+        total: totalAmount,
+        address: billingData.address || user.address || 'Address Not Provided',
+        method: 'cod'
+      };
+
+      // Show processing
+      document.getElementById('process-overlay').classList.add('show');
+      document.getElementById('place-btn').disabled = true;
+
+      try {
+        const res = await fetch(`${API}/order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        });
+
+        const result = await res.json();
+        document.getElementById('process-overlay').classList.remove('show');
+
+        if (result.success) {
+          // Clear cart
+          localStorage.removeItem('checkoutCart');
+          localStorage.removeItem('payableAmount');
+          localStorage.removeItem('billingData');
+
+          // Show success
+          document.getElementById('success-order-id').textContent = `Order #${result.order_id}`;
+          document.getElementById('success-overlay').classList.add('show');
+
+          setTimeout(() => goToOrders(), 3000);
+        } else {
+          document.getElementById('place-btn').disabled = false;
+          alert('❌ Order Failed: ' + (result.error || result.message || 'Unknown error'));
+        }
+
+      } catch (err) {
+        document.getElementById('process-overlay').classList.remove('show');
+        document.getElementById('place-btn').disabled = false;
+        console.error(err);
+        alert('⚠️ Cannot connect to server.\nMake sure Node.js is running:\n\ncd C:\\xampp\\htdocs\\magic_backend_node\nnode server.js');
+      }
+    }
+
+    function goToOrders() {
+      window.location.href = 'orders.html';
+    }
+  </script>
+
+</body>
+</html>
