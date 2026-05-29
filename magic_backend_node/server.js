@@ -132,13 +132,13 @@ app.get('/all-orders', async (req, res) => {
 
 app.get('/admin/analytics', async (req, res) => {
     try {
-        const [results] = await db.query("SELECT * FROM orders ORDER BY order_date DESC");
+        const [results] = await db.query("SELECT * FROM orders ORDER BY created_at DESC");
         let totalRevenue = 0;
         const salesMap = {};
         const itemMap = {};
         results.forEach(order => {
             totalRevenue += parseFloat(order.total_amount) || 0;
-            const date = new Date(order.order_date).toISOString().split('T')[0];
+            const date = new Date(order.created_at).toISOString().split('T')[0];
             salesMap[date] = (salesMap[date] || 0) + (parseFloat(order.total_amount) || 0);
             let items = [];
             try { items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items; } catch (e) {}
